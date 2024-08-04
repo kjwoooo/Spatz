@@ -9,6 +9,7 @@ import com.elice.spatz.domain.userfeature.model.dto.response.BlockDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.FriendDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.FriendRequestDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.model.entity.Status;
 import com.elice.spatz.domain.userfeature.service.UserFeatureService;
 import lombok.RequiredArgsConstructor;
@@ -103,8 +104,8 @@ public class UserFeatureController {
     }
     // 2. 처리 전/후 신고 조회
     @GetMapping("reports")
-    public ResponseEntity<Page<ReportDto>> getReports(@RequestParam long reporterId, @RequestParam Status status, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
-        Page<ReportDto> reportDtos = userFeatureService.getReports(reporterId, status, pageable);
+    public ResponseEntity<Page<ReportDto>> getReports(@RequestParam long reporterId, @RequestParam ReportStatus reportStatus, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<ReportDto> reportDtos = userFeatureService.getReports(reporterId, reportStatus, pageable);
         return ResponseEntity.ok(reportDtos);
     }
     // 3. 신고 수정

@@ -188,13 +188,13 @@ public class UserFeatureService {
         byte[] imageBytes = file.getBytes();
         Report newReport = requestMapper.reportCreateDtoToReport(reportCreateDto);
         newReport.setReportImage(imageBytes);
-        newReport.setReportStatus(WAITING);
+        newReport.setReportStatus(ReportStatus.WAITING);
         reportRepository.save(newReport);
     }
     // 2. 처리 전/후 신고 조회
     @Transactional
-    public Page<ReportDto> getReports(long reporterId, Status status, Pageable pageable){
-        Page<Report> reports = reportRepository.findAllByReporterIdAndReportStatus(reporterId, status, pageable);
+    public Page<ReportDto> getReports(long reporterId, ReportStatus reportStatus, Pageable pageable){
+        Page<Report> reports = reportRepository.findAllByReporterIdAndReportStatus(reporterId, reportStatus, pageable);
         List<ReportDto> reportDtoList = reports.getContent().stream()
                 .map(responseMapper::reportToReportDto)
                 .collect(Collectors.toList());

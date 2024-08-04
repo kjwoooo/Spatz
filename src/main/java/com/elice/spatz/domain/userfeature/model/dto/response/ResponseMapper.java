@@ -30,9 +30,11 @@ public interface ResponseMapper {
     @Mapping(source = "friend.nickname", target = "friendNickname")
     FriendDto friendshipToFriendDto(Friendship entity);
 
-    // 신고 요청
+    // 신고
     @Mapping(source = "reporter.id", target = "reporterId")
     @Mapping(source = "reported.id", target = "reportedId")
+    @Mapping(source = "reportStatus", target = "reportStatus")
     @Mapping(source = "reportReason", target = "reportReason")
+    @Mapping(source = "reportImage", target = "reportImage")
     ReportDto reportToReportDto(Report entity);
 }
