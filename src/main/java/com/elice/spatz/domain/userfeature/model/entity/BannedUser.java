@@ -31,6 +31,9 @@ public class BannedUser {
     @Column(nullable = false)
     private LocalDateTime bannedEnd;
 
-    @Column(nullable = false)
-    private boolean bannedStatus;
+    public BannedUser(Users user, LocalDateTime bannedStart, LocalDateTime bannedEnd) {
+        this.user = user;
+        this.bannedStart = bannedStart;
+        this.bannedEnd = bannedEnd;
+    }
 }

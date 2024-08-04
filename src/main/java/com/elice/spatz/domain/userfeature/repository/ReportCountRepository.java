@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReportCountRepository extends JpaRepository<ReportCount, Long> {
+    ReportCount findByUserId(Long userId);
 }
