@@ -43,7 +43,7 @@ public class UserFeatureService {
     // 2. 차단 조회
     @Transactional
     public Page<BlockDto> getBlocks(long blockerId, Pageable pageable){
-        Page<Block> blocks = blockRepository.findAllByBlockerId(blockerId, pageable);
+        Page<Block> blocks = blockRepository.findAllByBlockerIdAndBlockedBannedUserIsNull(blockerId, pageable);
         List<BlockDto> blockDtoList = new ArrayList<>();
         blockDtoList = blocks.getContent().stream()
                 .map(responseMapper::blockToBlockDto)
@@ -69,9 +69,9 @@ public class UserFeatureService {
         Page<FriendRequest> friendRequests;
 
         if (status.equals("sent")){
-            friendRequests = friendRequestRepository.findAllByRequesterId(userId, pageable);
+            friendRequests = friendRequestRepository.findAllByRequesterIdAndRecipientBannedUserIsNull(userId, pageable);
         } else if (status.equals("received")){
-            friendRequests = friendRequestRepository.findAllByRecipientId(userId, pageable);
+            friendRequests = friendRequestRepository.findAllByRecipientIdAndRequesterBannedUserIsNull(userId, pageable);
         } else {
             throw new IllegalArgumentException("Invalid status: " + status);
         }
@@ -114,7 +114,7 @@ public class UserFeatureService {
     @Transactional
     public Page<FriendDto> getFriendShips(long userId, Pageable pageable){
         // 내가 userId로 등록된 친구 목록 조회
-        Page<Friendship> friendshipsAsUser = friendshipRepository.findAllByUserId(userId, pageable);
+        Page<Friendship> friendshipsAsUser = friendshipRepository.findAllByUserIdAndFriendBannedUserIsNull(userId, pageable);
         List<FriendDto> userFriends = friendshipsAsUser.getContent().stream()
                 .map(f -> new FriendDto(
                         f.getUser().getId(),
@@ -124,7 +124,7 @@ public class UserFeatureService {
                 .collect(Collectors.toList());
 
         // 내가 friendId로 등록된 친구 조회
-        Page<Friendship> friendshipsAsFriend = friendshipRepository.findAllByFriendId(userId, pageable);
+        Page<Friendship> friendshipsAsFriend = friendshipRepository.findAllByFriendIdAndUserBannedUserIsNull(userId, pageable);
         List<FriendDto> friendUsers = friendshipsAsFriend.getContent().stream()
                 .map(f -> new FriendDto(
                         f.getFriend().getId(),
@@ -146,7 +146,7 @@ public class UserFeatureService {
     @Transactional
     public Page<FriendDto> getFriendshipsByKeyword(String keyword, long userId, Pageable pageable){
         // 내가 userId로 등록된 친구 목록 조회
-        Page<Friendship> friendshipsAsUser = friendshipRepository.findAllByUserId(userId, pageable);
+        Page<Friendship> friendshipsAsUser = friendshipRepository.findAllByUserIdAndFriendBannedUserIsNull(userId, pageable);
         List<FriendDto> userFriends = friendshipsAsUser.getContent().stream()
                 .map(f -> new FriendDto(
                         f.getUser().getId(),
@@ -157,7 +157,7 @@ public class UserFeatureService {
                 .collect(Collectors.toList());
 
         // 내가 friendId로 등록된 친구 조회
-        Page<Friendship> friendshipsAsFriend = friendshipRepository.findAllByFriendId(userId, pageable);
+        Page<Friendship> friendshipsAsFriend = friendshipRepository.findAllByFriendIdAndUserBannedUserIsNull(userId, pageable);
         List<FriendDto> friendUsers = friendshipsAsFriend.getContent().stream()
                 .map(f -> new FriendDto(
                         f.getFriend().getId(),

@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
     // 친구 조회
-    Page<Friendship> findAllByUserId(Long userId, Pageable pageable);
-    Page<Friendship> findAllByFriendId(Long friendId, Pageable pageable);
+    Page<Friendship> findAllByUserIdAndFriendBannedUserIsNull(Long userId, Pageable pageable);
+    Page<Friendship> findAllByFriendIdAndUserBannedUserIsNull(Long friendId, Pageable pageable);
 }

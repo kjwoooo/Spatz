@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
     // 보낸 요청 조회
-    Page<FriendRequest> findAllByRequesterId(Long requesterId, Pageable pageable);
+    Page<FriendRequest> findAllByRequesterIdAndRecipientBannedUserIsNull(Long requesterId, Pageable pageable);
     // 받은 요청 조회
-    Page<FriendRequest> findAllByRecipientId(Long recipientId, Pageable pageable);
+    Page<FriendRequest> findAllByRecipientIdAndRequesterBannedUserIsNull(Long recipientId, Pageable pageable);
 }
