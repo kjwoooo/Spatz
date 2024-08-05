@@ -1,6 +1,7 @@
 package com.elice.spatz.domain.userfeature.service;
 
 import com.elice.spatz.domain.user.entity.Users;
+import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.ResponseMapper;
 import com.elice.spatz.domain.userfeature.model.entity.BannedUser;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,7 @@ public class AdminFeatureService {
     private final ReportCountRepository reportCountRepository;
     private final ResponseMapper responseMapper;
     private final BannedUserRepository bannedUserRepository;
+    private final UserRepository userRepository;
 
     // 1. 신고 목록 조회
     @Transactional
@@ -72,7 +75,4 @@ public class AdminFeatureService {
             }
         }
     }
-
-    // 사용자 정지 해제 스케줄러
-
 }
