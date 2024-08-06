@@ -1,14 +1,13 @@
 package com.elice.spatz.domain.user.service;
 
 import com.elice.spatz.constants.ApplicationConstants;
-import com.elice.spatz.domain.user.dto.SignInRequest;
-import com.elice.spatz.domain.user.dto.SignInResponse;
-import com.elice.spatz.domain.user.dto.UserRegisterDto;
-import com.elice.spatz.domain.user.dto.UserRegisterResultDto;
+import com.elice.spatz.domain.user.dto.*;
 import com.elice.spatz.domain.user.entity.UserRefreshToken;
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRefreshTokenRepository;
 import com.elice.spatz.domain.user.repository.UserRepository;
+import com.elice.spatz.exception.errorCode.UserErrorCode;
+import com.elice.spatz.exception.exception.UserException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -16,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final Environment env;
     private final TokenProvider tokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public SignInResponse signIn(SignInRequest signInRequest) {
@@ -73,23 +74,45 @@ public class UserService {
         return new SignInResponse(signInRequest.getUsername(), accessJwtToken, refreshJwtToken);	// 생성자에 토큰 추가
     }
 
+    // 회원 가입 기능
     public UserRegisterResultDto register(UserRegisterDto userRegisterDto) {
-        Users newUser = new Users(userRegisterDto.getEmail(),
+
+        // 이미 사용 중인 이메일일 경우에는 예외 반환
+        userRepository.findByEmail(userRegisterDto.getEmail()).ifPresent(user -> {
+            throw new UserException(UserErrorCode.EMAIL_ALREADY_IN_USE);
+        });
+
+        // 이미 사용 중인 닉네임일 경우에는 예외 반환
+        userRepository.findByNickname(userRegisterDto.getNickname()).ifPresent(user -> {
+            throw new UserException(UserErrorCode.NICKNAME_ALREADY_IN_USE);
+        });
+
+
+        Users newUser = new Users(
+                userRegisterDto.getEmail(),
                 userRegisterDto.getPassword(),
                 userRegisterDto.getNickname(),
                 null,
+                userRegisterDto.isMarketingAgreed(),
                 false,
-                "user", true);
+                "user",
+                true
+        );
 
         userRepository.save(newUser);
 
         return new UserRegisterResultDto(true, null);
     }
 
-    // 이미 입력한 이메일에 해당하는 사용자가 존재하면 false 반환 >> 실패의 의미
-    // 이미 입력한 이메일에 해당하는 사용자가 없다면 true 반환 >> 성공의 의미
-    public boolean preCheckEmail(String email) {
-        return userRepository.findUsersByEmail(email).isEmpty();
+    // 비밀 번호 변경 메소드
+    @Transactional
+    public void changePassword(Long userId, PasswordChangeRequest passwordChangeRequest) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 비밀 번호 변경
+        String newEncodedPassword = passwordEncoder.encode(passwordChangeRequest.getPassword());
+        user.changePassword(newEncodedPassword);
+
     }
 
 }
