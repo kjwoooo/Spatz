@@ -18,8 +18,9 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
 
 
-    @PostMapping("/register")
-    public ResponseEntity<UserRegisterResultDto> processRegister(@RequestBody UserRegisterDto userRegisterDto) {
+    // 회원 가입 처리
+    @PostMapping("/users")
+    public ResponseEntity<UserRegisterResultDto> register(@RequestBody UserRegisterDto userRegisterDto) {
         String hashedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
         userRegisterDto.setPassword(hashedPassword);
 
@@ -28,15 +29,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @GetMapping("/precheck-email")
-    public ResponseEntity<UserRegisterResultDto> processRegister(@RequestParam String email) {
-
-        boolean result = userService.preCheckEmail(email);
-        HttpStatus code = result ? HttpStatus.OK : HttpStatus.CONFLICT;
-
-        return ResponseEntity.status(code)
-                .body(new UserRegisterResultDto(result, null));
-    }
 
     @PostMapping("/apiLogin")
     public ResponseEntity<SignInResponse> apiLogin(@RequestBody SignInRequest signInRequest) {
@@ -47,19 +39,20 @@ public class UserController {
                 .body(signInResponse);
     }
 
+    @PatchMapping("/users/password")
+    public ResponseEntity<String> updateUserInformation(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody PasswordChangeRequest passwordChangeRequest) {
+
+        userService.changePassword(customUserDetails.getId(), passwordChangeRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
     @GetMapping("/test")
     public String test(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         System.out.println("customUserDetails = " + customUserDetails);
-        Long id = customUserDetails.getId();
-        System.out.println("id = " + id);
-        String email = customUserDetails.getEmail();
-        System.out.println("email = " + email);
-        String role = customUserDetails.getRole();
-        System.out.println("role = " + role);
-        String password = customUserDetails.getPassword();
-        System.out.println("password = " + password);
-
-        return "srt";
+        System.out.println("nickname" + customUserDetails.getNickname());
+        return "str";
     }
 
 }
