@@ -23,14 +23,20 @@ public class ReactionController {
     }
 
     @PostMapping
-    public ResponseEntity<Reaction> addReaction(@RequestParam ChatMessage message, @RequestParam String emoji) {
-        Reaction reaction = reactionService.addReaction(message, emoji);
+    public ResponseEntity<Reaction> addReaction(@RequestParam String messageId, @RequestParam String emoji) {
+        Reaction reaction = reactionService.addReaction(messageId, emoji);
         return ResponseEntity.ok(reaction);
     }
 
     @GetMapping("/{messageId}")
-    public ResponseEntity<List<Reaction>> getReactionsByMessageId(@PathVariable ChatMessage message) {
-        List<Reaction> reactions = reactionService.getReactionsByMessage(message);
+    public ResponseEntity<List<Reaction>> getReactionsByMessageId(@PathVariable String messageId) {
+        List<Reaction> reactions = reactionService.getReactionsByMessageId(messageId);
         return ResponseEntity.ok(reactions);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReaction(@PathVariable Integer id) {
+        reactionService.deleteReaction(id);
+        return ResponseEntity.ok().build();
     }
 }

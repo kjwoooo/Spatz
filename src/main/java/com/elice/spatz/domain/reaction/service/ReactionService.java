@@ -14,16 +14,17 @@ import java.util.List;
 public class ReactionService {
     private final ReactionRepository reactionRepository;
 
-    public Reaction addReaction(ChatMessage message, String emoji) {
+    public Reaction addReaction(String messageId, String emoji) {
         Reaction reaction = new Reaction();
-        reaction.setMessage(message);
+        reaction.setMessageId(messageId);
         reaction.setEmoji(emoji);
         return reactionRepository.save(reaction);
     }
 
-    public List<Reaction> getReactionsByMessage(ChatMessage message) {
-        return reactionRepository.findByMessage(message);
+    public List<Reaction> getReactionsByMessageId(String messageId) {
+        return reactionRepository.findByMessageId(messageId);
     }
+
 
     public void deleteReaction(Integer id) {
         reactionRepository.deleteById(id);
