@@ -69,8 +69,8 @@ public class FileUploadController {
     }
 
     @GetMapping("/download/{fileKey:.+}")
-    public void downloadFile(@PathVariable String fileKey,
-                               @RequestParam(required = false) String downloadFileName,
+    public void downloadFile(@PathVariable ("fileKey") String fileKey,
+                               @RequestParam (value = "downloadFileName", required = false) String downloadFileName,
                                HttpServletRequest request,
                                HttpServletResponse response) throws BadRequestException {
         try {
