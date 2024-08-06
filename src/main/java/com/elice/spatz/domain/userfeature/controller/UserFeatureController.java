@@ -1,6 +1,6 @@
 package com.elice.spatz.domain.userfeature.controller;
 
-import com.elice.spatz.domain.user.service.UserService;
+import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.userfeature.model.dto.request.BlockCreateDto;
 import com.elice.spatz.domain.userfeature.model.dto.request.FriendRequestCreateDto;
 import com.elice.spatz.domain.userfeature.model.dto.request.ReportCreateDto;
@@ -10,7 +10,6 @@ import com.elice.spatz.domain.userfeature.model.dto.response.FriendDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.FriendRequestDto;
 import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
 import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
-import com.elice.spatz.domain.userfeature.model.entity.Status;
 import com.elice.spatz.domain.userfeature.service.UserFeatureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +41,13 @@ public class UserFeatureController {
         Page<BlockDto> blocks = userFeatureService.getBlocks(blockerId, pageable);
         return ResponseEntity.ok(blocks);
     }
+    /* @AuthenticationPrincipal 적용
+    @GetMapping("/blocks")
+    public ResponseEntity<Page<BlockDto>> getBlocks(@AuthenticationPrincipal CustomUserDetails blocker , @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<BlockDto> blocks = userFeatureService.getBlocks(blocker.getId(), pageable);
+        return ResponseEntity.ok(blocks);
+    }
+     */
     // 3. 차단 해제 (하드딜리트)
     @DeleteMapping("/unblock")
     public ResponseEntity<String> unBlock(@RequestParam long blockId){
@@ -60,6 +67,13 @@ public class UserFeatureController {
         Page<FriendRequestDto> friendRequests = userFeatureService.getFriendRequests(status, userId, pageable);
         return ResponseEntity.ok(friendRequests);
     }
+    /* @AuthenticationPrincipal 적용
+    @GetMapping("/friend-requests")
+    public ResponseEntity<Page<FriendRequestDto>> getSentFriendRequests(@RequestParam String status, @AuthenticationPrincipal CustomUserDetails user, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<FriendRequestDto> friendRequests = userFeatureService.getFriendRequests(status, user.getId(), pageable);
+        return ResponseEntity.ok(friendRequests);
+    }
+     */
     // 3. 받은 요청 응답
     @PatchMapping("/friend-request")
     public ResponseEntity<String> responseReceivedFriendRequest(@RequestParam long friendRequestId, @RequestParam String status){
@@ -79,12 +93,26 @@ public class UserFeatureController {
         Page<FriendDto> friendDtos = userFeatureService.getFriendShips(userId, pageable);
         return ResponseEntity.ok(friendDtos);
     }
+    /* @AuthenticationPrincipal 적용
+    @GetMapping("/friendships")
+    public ResponseEntity<Page<FriendDto>> getFriendships(@AuthenticationPrincipal CustomUserDetails user, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<FriendDto> friendDtos = userFeatureService.getFriendShips(user.getId(), pageable);
+        return ResponseEntity.ok(friendDtos);
+    }
+     */
     // 2. 친구 검색 조회
     @GetMapping("/friendships/keyword")
     public ResponseEntity<Page<FriendDto>> getFriendshipsByKeyword(@RequestParam String keyword, @RequestParam long userId, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<FriendDto> friendDtosByKeyword = userFeatureService.getFriendshipsByKeyword(keyword, userId, pageable);
         return ResponseEntity.ok(friendDtosByKeyword);
     }
+    /* @AuthenticationPrincipal 적용
+    @GetMapping("/friendships/keyword")
+    public ResponseEntity<Page<FriendDto>> getFriendshipsByKeyword(@RequestParam String keyword, @AuthenticationPrincipal CustomUserDetails user, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<FriendDto> friendDtosByKeyword = userFeatureService.getFriendshipsByKeyword(keyword, user.getId(), pageable);
+        return ResponseEntity.ok(friendDtosByKeyword);
+    }
+     */
     // 3. 친구 해제 (하드딜리트)
     @DeleteMapping("/un-friendship")
     public ResponseEntity<String> deleteFriendship(@RequestParam long friendshipId){
@@ -102,12 +130,30 @@ public class UserFeatureController {
         userFeatureService.createReport(newReportCreateDto, file);
         return ResponseEntity.ok("신고 요청이 완료되었습니다.");
     }
+    /* @AuthenticationPrincipal 적용
+    @PostMapping("report")
+    public ResponseEntity<String> createReport(@AuthenticationPrincipal CustomUserDetails reporter,
+                                               @RequestParam("reportedId") long reportedId,
+                                               @RequestParam("reportReason") String reportReason,
+                                               @RequestParam("file") MultipartFile file) throws IOException{
+        ReportCreateDto newReportCreateDto = new ReportCreateDto(reporter.getId(), reportedId, reportReason);
+        userFeatureService.createReport(newReportCreateDto, file);
+        return ResponseEntity.ok("신고 요청이 완료되었습니다.");
+    }
+     */
     // 2. 처리 전/후 신고 조회
     @GetMapping("reports")
     public ResponseEntity<Page<ReportDto>> getReports(@RequestParam long reporterId, @RequestParam ReportStatus reportStatus, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         Page<ReportDto> reportDtos = userFeatureService.getReports(reporterId, reportStatus, pageable);
         return ResponseEntity.ok(reportDtos);
     }
+    /* @AuthenticationPrincipal 적용
+    @GetMapping("reports")
+    public ResponseEntity<Page<ReportDto>> getReports(@AuthenticationPrincipal CustomUserDetails reporter, @RequestParam ReportStatus reportStatus, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable){
+        Page<ReportDto> reportDtos = userFeatureService.getReports(reporter.getId(), reportStatus, pageable);
+        return ResponseEntity.ok(reportDtos);
+    }
+     */
     // 3. 신고 수정
     @PutMapping("report")
     public ResponseEntity<String> updateReport(@RequestParam("reportId") long id,
@@ -119,6 +165,18 @@ public class UserFeatureController {
         userFeatureService.updateReport(updatedReportCreateDto, id, file);
         return ResponseEntity.ok("신고 수정 완료되었습니다.");
     }
+    /* @AuthenticationPrincipal 적용
+    @PutMapping("report")
+    public ResponseEntity<String> updateReport(@RequestParam("reportId") long id,
+                                               @AuthenticationPrincipal CustomUserDetails reporter,
+                                               @RequestParam("reportedId") long reportedId,
+                                               @RequestParam("reportReason") String reportReason,
+                                               @RequestParam("file") MultipartFile file) throws IOException{
+        ReportUpdateDto updatedReportCreateDto = new ReportUpdateDto(id, reporter.getId(), reportedId, reportReason);
+        userFeatureService.updateReport(updatedReportCreateDto, id, file);
+        return ResponseEntity.ok("신고 수정 완료되었습니다.");
+    }
+     */
     // 4. 처리 전/후 신고 삭제
     @DeleteMapping("un-report")
     public ResponseEntity<String> deleteReport(@RequestParam long reportId){
