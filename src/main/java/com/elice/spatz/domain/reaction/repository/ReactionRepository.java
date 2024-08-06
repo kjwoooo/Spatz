@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ReactionRepository extends JpaRepository<Reaction, Integer> {
 
-    List<Reaction> findByMessage(ChatMessage message);
+    List<Reaction> findByMessageId(String messageId);
 
 }
