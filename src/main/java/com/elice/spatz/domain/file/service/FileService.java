@@ -41,6 +41,7 @@ public class FileService {
     private final FileRepository fileRepository;
 
     @Value("${file.upload.max-size}")
+
     private long maxFileSize;
 
     @Value("${cloud.aws.s3.bucket}")
