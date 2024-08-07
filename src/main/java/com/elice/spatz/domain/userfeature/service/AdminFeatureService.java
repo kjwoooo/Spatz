@@ -11,6 +11,8 @@ import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.repository.BannedUserRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportCountRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportRepository;
+import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
+import com.elice.spatz.exception.exception.UserFeatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,6 +34,13 @@ public class AdminFeatureService {
     private final BannedUserRepository bannedUserRepository;
     private final UserRepository userRepository;
 
+    // 공통 예외 처리 메소드
+    private void CheckReportExists(long reportId) {
+        if(!reportRepository.existsById(reportId)){
+            throw new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT);
+        }
+    }
+
     // 1. 신고 목록 조회
     @Transactional
     public Page<ReportDto> getWaitingReports(ReportStatus reportStatus, Pageable pageable){
@@ -44,14 +53,19 @@ public class AdminFeatureService {
     // 2. 신고 상세 조회
     @Transactional
     public  ReportDto getWaitingReport(long reportId){
+        // 예외 체크: 조회할 신고 정보가 존재하는지 확인
+        CheckReportExists(reportId);
+
         Report report = reportRepository.findById(reportId).orElse(null);
         return responseMapper.reportToReportDto(report);
     }
     // 3. 신고 응답
     @Transactional
     public void responseReport(long reportId, ReportStatus reportStatus){
-        Report report = reportRepository.findById(reportId).orElseThrow();
+        // 예외 체크: 응답할 신고 정보가 존재하는지 확인
+        CheckReportExists(reportId);
 
+        Report report = reportRepository.findById(reportId).orElseThrow();
         report.setReportStatus(reportStatus);
 
         // 신고 수락시 누적 신고 횟수 추가
