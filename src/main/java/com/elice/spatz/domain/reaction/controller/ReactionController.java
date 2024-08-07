@@ -1,6 +1,5 @@
 package com.elice.spatz.domain.reaction.controller;
 
-import com.elice.spatz.domain.chat.entity.ChatMessage;
 import com.elice.spatz.domain.reaction.entity.Reaction;
 import com.elice.spatz.domain.reaction.service.ReactionService;
 import lombok.RequiredArgsConstructor;
@@ -19,23 +18,23 @@ public class ReactionController {
 
     @GetMapping("/emojiTest")
     public String frontTest(){
-        return "/EmojiTest.html";
+        return "/index.html";
     }
 
     @PostMapping
-    public ResponseEntity<Reaction> addReaction(@RequestParam String messageId, @RequestParam String emoji) {
+    public ResponseEntity<Reaction> addReaction(@RequestParam("messageId") String messageId, @RequestParam("emoji") String emoji) {
         Reaction reaction = reactionService.addReaction(messageId, emoji);
         return ResponseEntity.ok(reaction);
     }
 
     @GetMapping("/{messageId}")
-    public ResponseEntity<List<Reaction>> getReactionsByMessageId(@PathVariable String messageId) {
+    public ResponseEntity<List<Reaction>> getReactionsByMessageId(@PathVariable("messageId") String messageId) {
         List<Reaction> reactions = reactionService.getReactionsByMessageId(messageId);
         return ResponseEntity.ok(reactions);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReaction(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteReaction(@PathVariable("id") Integer id) {
         reactionService.deleteReaction(id);
         return ResponseEntity.ok().build();
     }

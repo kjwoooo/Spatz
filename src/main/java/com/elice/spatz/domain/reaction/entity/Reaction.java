@@ -14,7 +14,7 @@ public class Reaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @JoinColumn(name = "message_id", nullable = false)
+    @Column(name = "message_id", nullable = false)
     private String messageId;
 
     @Column(name = "emoji", nullable = false, length = 50)
