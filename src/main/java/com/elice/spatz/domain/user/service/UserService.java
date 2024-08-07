@@ -114,6 +114,11 @@ public class UserService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
+    public Users findByNickname(String nickname) {
+        return userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+    }
+
     @Transactional
     public void changeRandomPasswordByEmail(String email, String randomPassword) {
         Users user = userRepository
