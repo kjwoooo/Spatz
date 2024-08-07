@@ -95,15 +95,16 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    // apiLogin이라는 사용자 정의 인증 로직을 위해서는, 요청이 들어올 때 authentication process를 시작하도록 하여야 한다.
-    // 그렇게 하기 위해서는 Authentication Manager를 구현해야 함
+    // apiLogin 이라는 사용자 정의 인증 로직을 위해서는, 요청이 들어올 때 authentication process 를 시작하도록 하여야 한다.
+    // 그렇게 하기 위해서는 Authentication Manager 를 구현해야 함
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
                                                        PasswordEncoder passwordEncoder) {
         CustomAuthenticationProvider authenticationProvider =
                 new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
+
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
-        providerManager.setEraseCredentialsAfterAuthentication(false); // 인증과정에서 authentication객체의 비밀번호를 지우지 않고 넘겨주어서 사용자 정의 인증로직이 제대로 동작하게 함.
+        providerManager.setEraseCredentialsAfterAuthentication(false); // 인증과정에서 authentication 객체의 비밀번호를 지우지 않고 넘겨주어서 사용자 정의 인증로직이 제대로 동작하게 함.
         return  providerManager;
     }
 
