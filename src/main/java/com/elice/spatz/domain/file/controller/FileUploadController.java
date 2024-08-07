@@ -32,7 +32,7 @@ public class FileUploadController {
 
     @GetMapping("/frontTest")
     public String frontTest(){
-        return "/FileDownloadTest.html";
+        return "/index.html";
     }
 
     @PostMapping("/upload")
