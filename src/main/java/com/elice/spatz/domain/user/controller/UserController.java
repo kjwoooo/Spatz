@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.user.controller;
 
+import com.amazonaws.Response;
 import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.user.dto.*;
 import com.elice.spatz.domain.user.service.UserService;
@@ -9,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,11 +51,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
-    @GetMapping("/test")
-    public String test(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        System.out.println("customUserDetails = " + customUserDetails);
-        System.out.println("nickname" + customUserDetails.getNickname());
-        return "str";
+    // 이메일을 JSON BODY로 받아서, 해당하는 이메일에 해당하는 유저가 있는 지 여부를 체크하는 컨트롤러 기능
+    @GetMapping("/users")
+    public ResponseEntity<String> findUserByEmail(@RequestParam String email) {
+
+        System.out.println("email = " + email);
+        userService.findByEmail(email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
 }
