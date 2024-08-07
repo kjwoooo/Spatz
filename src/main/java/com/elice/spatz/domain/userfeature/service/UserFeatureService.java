@@ -36,7 +36,7 @@ public class UserFeatureService {
     private final UserRepository userRepository;
     private final BannedUserRepository bannedUserRepository;
 
-    // 공통 예외 처리 메소드 (사용자 존재 여부 확인)
+    // 공통 예외 처리 메소드 - 사용자 존재 여부 확인
     private void CheckUserExists(Long userId){
         userRepository.findById(userId).orElseThrow(()->
                 new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER)
@@ -89,14 +89,14 @@ public class UserFeatureService {
         long requesterId = friendRequestCreateDto.getRequesterId();
         long recipientId = friendRequestCreateDto.getRecipientId();
         CheckUserExists(recipientId);
-        friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND)
+        friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((firend)->{
+                throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
-        friendshipRepository.findByFriendIdAndUserId(recipientId, requesterId).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND)
+        friendshipRepository.findByFriendIdAndUserId(recipientId, requesterId).ifPresent((friend)->{
+                throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
-        bannedUserRepository.findByUserId(recipientId).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.BANNED_USER)
+        bannedUserRepository.findByUserId(recipientId).ifPresent((bannedUser)->{
+            throw new UserFeatureException(UserFeatureErrorCode.BANNED_USER);}
         );
         blockRepository.findByBlockerIdAndBlockedId(requesterId, recipientId).ifPresent((block)-> {
             throw new UserFeatureException(UserFeatureErrorCode.BLOCKED_USER);
@@ -106,13 +106,12 @@ public class UserFeatureService {
         });
 
         // 예외 체크 2: 이미 친구 요청을 전송한 상태인지 확인 -> 상대방에게 친구 요청을 받은 상태인지 확인
-        friendRequestRepository.findByRequesterIdAndRecipientIdAndRequestStatus(requesterId, recipientId, WAITING).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.ALREADY_REQUESTED)
+        friendRequestRepository.findByRequesterIdAndRecipientIdAndRequestStatus(requesterId, recipientId, WAITING).ifPresent((friendRequest)-> {
+                throw new UserFeatureException(UserFeatureErrorCode.ALREADY_REQUESTED);}
         );
-        friendRequestRepository.findByRecipientIdAndRequesterIdAndRequestStatus(recipientId, requesterId, WAITING).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.ALREADY_RECEIVED)
+        friendRequestRepository.findByRecipientIdAndRequesterIdAndRequestStatus(recipientId, requesterId, WAITING).ifPresent((friendRequest)-> {
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_RECEIVED);}
         );
-
 
         FriendRequest friendRequest = requestMapper.friendRequestCreateDtoToFriendRequest(friendRequestCreateDto);
         friendRequestRepository.save(friendRequest);
@@ -248,8 +247,8 @@ public class UserFeatureService {
         long reporterId = reportCreateDto.getReporterId();
         long reportedId = reportCreateDto.getReportedId();
         CheckUserExists(reportedId);
-        reportRepository.findByReporterIdAndReportedIdAndReportStatus(reporterId, reportedId, ReportStatus.WAITING).orElseThrow(()->
-                new UserFeatureException(UserFeatureErrorCode.ALREADY_REPORTED)
+        reportRepository.findByReporterIdAndReportedIdAndReportStatus(reporterId, reportedId, ReportStatus.WAITING).ifPresent((report)-> {
+                throw new UserFeatureException(UserFeatureErrorCode.ALREADY_REPORTED);}
         );
 
         byte[] imageBytes = file.getBytes();
