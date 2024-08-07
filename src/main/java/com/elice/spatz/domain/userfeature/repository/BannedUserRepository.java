@@ -6,8 +6,10 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BannedUserRepository extends JpaRepository<BannedUser, Long> {
     List<BannedUser> findAllByBannedEnd(LocalDateTime bannedEnd);
+    Optional<BannedUser> findByUserId(long userId);
 }

@@ -1,13 +1,13 @@
 package com.elice.spatz.domain.userfeature.service;
 
 import com.elice.spatz.domain.user.entity.Users;
+import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.userfeature.model.dto.request.*;
 import com.elice.spatz.domain.userfeature.model.dto.response.*;
 import com.elice.spatz.domain.userfeature.model.entity.*;
-import com.elice.spatz.domain.userfeature.repository.BlockRepository;
-import com.elice.spatz.domain.userfeature.repository.FriendRequestRepository;
-import com.elice.spatz.domain.userfeature.repository.FriendshipRepository;
-import com.elice.spatz.domain.userfeature.repository.ReportRepository;
+import com.elice.spatz.domain.userfeature.repository.*;
+import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
+import com.elice.spatz.exception.exception.UserFeatureException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -33,10 +33,30 @@ public class UserFeatureService {
     private final ReportRepository reportRepository;
     private final RequestMapper requestMapper;
     private final ResponseMapper responseMapper;
+    private final UserRepository userRepository;
+    private final BannedUserRepository bannedUserRepository;
+
+    // 공통 예외 처리 메소드 (사용자 존재 여부 확인)
+    private void CheckUserExists(Long userId){
+        userRepository.findById(userId).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER)
+        );
+    }
 
     // 1. 차단 요청
     @Transactional
     public void createBlock(BlockCreateDto blockCreateDto){
+        // 예외 체크: 차단할 사용자 존재하는지 확인 -> 이미 차단 관계인지 확인 -> 자기 자신을 차단하려는 것인지 확인
+        Long blockerId = blockCreateDto.getBlockerId();
+        Long blockedId = blockCreateDto.getBlockedId();
+        CheckUserExists(blockedId);
+        blockRepository.findByBlockerIdAndBlockedId(blockerId, blockedId).ifPresent(block -> {
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_BLOCKED);
+        });
+        if (blockerId.equals(blockedId)){
+            throw new UserFeatureException(UserFeatureErrorCode.BLOCK_USER_SELF);
+        }
+
         Block newBlock = requestMapper.blockCreateDtoToBlock(blockCreateDto);
         blockRepository.save(newBlock);
     }
@@ -54,12 +74,46 @@ public class UserFeatureService {
     // 3. 차단 해제 (하드딜리트)
     @Transactional
     public void unBlock(long id) {
+        // 예외 체크: 이미 차단 해제된 상태인지 확인
+        if(!blockRepository.existsById(id)){
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_UNBLOCKED);
+        }
+
         blockRepository.deleteById(id);
     }
 
     // 1. 친구 요청
     @Transactional
     public void createFriendRequest(FriendRequestCreateDto friendRequestCreateDto){
+        // 예외 체크 1: 요청할 사용자 존재하는지 확인 -> 친구 관계인지 확인 -> 정지된 사용자인지 확인 -> 차단 관계인지 확인
+        long requesterId = friendRequestCreateDto.getRequesterId();
+        long recipientId = friendRequestCreateDto.getRecipientId();
+        CheckUserExists(recipientId);
+        friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND)
+        );
+        friendshipRepository.findByFriendIdAndUserId(recipientId, requesterId).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND)
+        );
+        bannedUserRepository.findByUserId(recipientId).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.BANNED_USER)
+        );
+        blockRepository.findByBlockerIdAndBlockedId(requesterId, recipientId).ifPresent((block)-> {
+            throw new UserFeatureException(UserFeatureErrorCode.BLOCKED_USER);
+        });
+        blockRepository.findByBlockerIdAndBlockedId(recipientId, requesterId).ifPresent((block)-> {
+            throw new UserFeatureException(UserFeatureErrorCode.BLOCKED_USER);
+        });
+
+        // 예외 체크 2: 이미 친구 요청을 전송한 상태인지 확인 -> 상대방에게 친구 요청을 받은 상태인지 확인
+        friendRequestRepository.findByRequesterIdAndRecipientIdAndRequestStatus(requesterId, recipientId, WAITING).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.ALREADY_REQUESTED)
+        );
+        friendRequestRepository.findByRecipientIdAndRequesterIdAndRequestStatus(recipientId, requesterId, WAITING).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.ALREADY_RECEIVED)
+        );
+
+
         FriendRequest friendRequest = requestMapper.friendRequestCreateDtoToFriendRequest(friendRequestCreateDto);
         friendRequestRepository.save(friendRequest);
     }
@@ -179,12 +233,25 @@ public class UserFeatureService {
     // 3. 친구 해제 (하드딜리트)
     @Transactional
     public void deleteFriendShip(long id){
+        // 예외 체크: 이미 친구 해제된 상태인지 확인
+        if(!friendshipRepository.existsById(id)){
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_UNFRIENDED);
+        }
+
         friendshipRepository.deleteById(id);
     }
 
     // 1. 신고 요청
     @Transactional
     public void createReport(ReportCreateDto reportCreateDto, MultipartFile file)throws IOException {
+        // 예외 체크: 신고할 사용자 존재하는지 확인 -> 이미 전송된 신고가 처리되지 않은 상태인지 확인 ALREADY_REPORTED
+        long reporterId = reportCreateDto.getReporterId();
+        long reportedId = reportCreateDto.getReportedId();
+        CheckUserExists(reportedId);
+        reportRepository.findByReporterIdAndReportedIdAndReportStatus(reporterId, reportedId, ReportStatus.WAITING).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.ALREADY_REPORTED)
+        );
+
         byte[] imageBytes = file.getBytes();
         Report newReport = requestMapper.reportCreateDtoToReport(reportCreateDto);
         newReport.setReportImage(imageBytes);
@@ -203,10 +270,13 @@ public class UserFeatureService {
     // 3. 신고 수정
     @Transactional
     public void updateReport(ReportUpdateDto reportUpdateDto, long id, MultipartFile file)throws IOException {
+        // 예외 체크: 수정할 신고 정보가 존재하는지 확인
+        if(!reportRepository.existsById(id)){
+            throw new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT);
+        }
+
         Report existingReport = reportRepository.findById(id).orElseThrow();
-
         existingReport.setReportReason(reportUpdateDto.getReportReason());
-
         if(!file.isEmpty()){
             byte[] imageBytes = file.getBytes();
             existingReport.setReportImage(imageBytes);
@@ -217,6 +287,11 @@ public class UserFeatureService {
     // 4. 처리 전/후 신고 삭제
     @Transactional
     public void deleteReport(long reportId){
+        // 예외 체크: 신고가 이미 철회/삭제되었는지 확인
+        if(!reportRepository.existsById(reportId)){
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_DELETED);
+        }
+
         reportRepository.deleteById(reportId);
     }
 }
