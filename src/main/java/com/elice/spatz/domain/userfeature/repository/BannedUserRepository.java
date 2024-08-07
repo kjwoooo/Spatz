@@ -1,6 +1,6 @@
 package com.elice.spatz.domain.userfeature.repository;
 
-import com.elice.spatz.domain.userfeature.model.entity.BannedUser;
+import com.elice.spatz.domain.userfeature.entity.BannedUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

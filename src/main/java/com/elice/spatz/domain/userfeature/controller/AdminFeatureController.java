@@ -1,8 +1,7 @@
 package com.elice.spatz.domain.userfeature.controller;
 
-import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
-import com.elice.spatz.domain.userfeature.model.entity.Report;
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.service.AdminFeatureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequiredArgsConstructor

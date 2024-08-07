@@ -1,7 +1,7 @@
 package com.elice.spatz.domain.userfeature.repository;
 
-import com.elice.spatz.domain.userfeature.model.entity.FriendRequest;
-import com.elice.spatz.domain.userfeature.model.entity.Status;
+import com.elice.spatz.domain.userfeature.entity.FriendRequest;
+import com.elice.spatz.domain.userfeature.entity.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

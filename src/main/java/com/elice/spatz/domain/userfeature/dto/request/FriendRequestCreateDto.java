@@ -1,7 +1,6 @@
-package com.elice.spatz.domain.userfeature.model.dto.request;
+package com.elice.spatz.domain.userfeature.dto.request;
 
-import com.elice.spatz.domain.userfeature.model.entity.Status;
-import lombok.AccessLevel;
+import com.elice.spatz.domain.userfeature.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

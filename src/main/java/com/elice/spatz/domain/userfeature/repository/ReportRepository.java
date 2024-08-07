@@ -1,7 +1,7 @@
 package com.elice.spatz.domain.userfeature.repository;
 
-import com.elice.spatz.domain.userfeature.model.entity.Report;
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.entity.Report;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

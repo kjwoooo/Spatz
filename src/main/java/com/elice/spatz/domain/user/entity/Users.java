@@ -1,6 +1,6 @@
 package com.elice.spatz.domain.user.entity;
 
-import com.elice.spatz.domain.userfeature.model.entity.*;
+import com.elice.spatz.domain.userfeature.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
 

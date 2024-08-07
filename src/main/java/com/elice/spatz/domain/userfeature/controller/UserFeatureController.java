@@ -1,15 +1,15 @@
 package com.elice.spatz.domain.userfeature.controller;
 
 import com.elice.spatz.config.CustomUserDetails;
-import com.elice.spatz.domain.userfeature.model.dto.request.BlockCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.FriendRequestCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.ReportCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.ReportUpdateDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.BlockDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.FriendDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.FriendRequestDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.dto.request.BlockCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.FriendRequestCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.ReportCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.ReportUpdateDto;
+import com.elice.spatz.domain.userfeature.dto.response.BlockDto;
+import com.elice.spatz.domain.userfeature.dto.response.FriendDto;
+import com.elice.spatz.domain.userfeature.dto.response.FriendRequestDto;
+import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.service.UserFeatureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
