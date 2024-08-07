@@ -45,7 +45,7 @@ public class UserService {
         if(null != authenticationResponse && authenticationResponse.isAuthenticated()) {
 
             Users user = userRepository.findByEmail(authenticationResponse.getName())
-                    .orElseThrow(() -> new IllegalStateException("입력한 이메일에 해당하는 사용자가 없습니다."));
+                    .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
             // JWT Access Token 생성
             accessJwtToken = tokenProvider.createAccessToken(
