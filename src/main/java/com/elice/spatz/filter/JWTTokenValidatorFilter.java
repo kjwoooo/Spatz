@@ -137,6 +137,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         return path.equals("/apiLogin")
                 || path.equals("/users")
-                ;
+                || path.equals("/mails");
     }
 }

@@ -1,6 +1,5 @@
 package com.elice.spatz.domain.user.service;
 
-import com.elice.spatz.constants.ApplicationConstants;
 import com.elice.spatz.domain.user.dto.*;
 import com.elice.spatz.domain.user.entity.UserRefreshToken;
 import com.elice.spatz.domain.user.entity.Users;
@@ -17,11 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.stream.Collectors;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import java.util.stream.Collectors;
 
 @Service
@@ -120,4 +114,13 @@ public class UserService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
 
+    @Transactional
+    public void changeRandomPasswordByEmail(String email, String randomPassword) {
+        Users user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        String encodedRandomPassword = passwordEncoder.encode(randomPassword);
+        user.changePassword(encodedRandomPassword);
+    }
 }
