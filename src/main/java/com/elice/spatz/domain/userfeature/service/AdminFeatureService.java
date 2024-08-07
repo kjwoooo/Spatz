@@ -1,13 +1,12 @@
 package com.elice.spatz.domain.userfeature.service;
 
-import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
-import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.ResponseMapper;
-import com.elice.spatz.domain.userfeature.model.entity.BannedUser;
-import com.elice.spatz.domain.userfeature.model.entity.Report;
-import com.elice.spatz.domain.userfeature.model.entity.ReportCount;
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.dto.response.ResponseMapper;
+import com.elice.spatz.domain.userfeature.entity.BannedUser;
+import com.elice.spatz.domain.userfeature.entity.Report;
+import com.elice.spatz.domain.userfeature.entity.ReportCount;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.repository.BannedUserRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportCountRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportRepository;
@@ -17,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.entity;
+package com.elice.spatz.domain.userfeature.entity;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.apache.catalina.User;
 
 @Entity
 @Getter

@@ -2,9 +2,9 @@ package com.elice.spatz.domain.userfeature.service;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
-import com.elice.spatz.domain.userfeature.model.dto.request.*;
-import com.elice.spatz.domain.userfeature.model.dto.response.*;
-import com.elice.spatz.domain.userfeature.model.entity.*;
+import com.elice.spatz.domain.userfeature.dto.request.*;
+import com.elice.spatz.domain.userfeature.dto.response.*;
+import com.elice.spatz.domain.userfeature.entity.*;
 import com.elice.spatz.domain.userfeature.repository.*;
 import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
 import com.elice.spatz.exception.exception.UserFeatureException;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.elice.spatz.domain.userfeature.model.entity.Status.*;
+import static com.elice.spatz.domain.userfeature.entity.Status.*;
 import static java.lang.Boolean.TRUE;
 
 @Service

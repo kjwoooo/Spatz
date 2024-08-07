@@ -1,10 +1,8 @@
-package com.elice.spatz.domain.userfeature.model.dto.response;
+package com.elice.spatz.domain.userfeature.dto.response;
 
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
-import com.elice.spatz.domain.userfeature.model.entity.Status;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor

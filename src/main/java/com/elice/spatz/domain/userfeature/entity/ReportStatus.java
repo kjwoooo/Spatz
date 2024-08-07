@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.entity;
+package com.elice.spatz.domain.userfeature.entity;
 
 public enum ReportStatus {
     WAITING,

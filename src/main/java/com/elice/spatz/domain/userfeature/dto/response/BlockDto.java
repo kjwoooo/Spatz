@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.dto.response;
+package com.elice.spatz.domain.userfeature.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
