@@ -13,7 +13,8 @@ public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.", "U003"),
     EMAIL_VERIFICATION_NOT_COMPLETE(HttpStatus.UNAUTHORIZED, "이메일 인증이 완료되지 않았습니다.", "U004"),
     NICKNAME_ALREADY_IN_USE(HttpStatus.CONFLICT, "이미 사용 중인 사용자 닉네임입니다.", "U005"),
-    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "확인코드가 일치하지 않습니다", "U006");
+    INVALID_VERIFICATION_CODE(HttpStatus.BAD_REQUEST, "확인코드가 일치하지 않습니다", "U006"),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다", "U007");
 
 
     private final HttpStatus status;
