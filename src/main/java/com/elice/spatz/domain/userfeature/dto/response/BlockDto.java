@@ -9,4 +9,5 @@ import lombok.Setter;
 public class BlockDto {
     private long blockerId;
     private long blockedId;
+    private String blockedNickname;
 }

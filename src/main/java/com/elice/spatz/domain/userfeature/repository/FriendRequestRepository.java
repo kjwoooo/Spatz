@@ -15,6 +15,7 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
     Page<FriendRequest> findAllByRequesterIdAndRecipientBannedUserIsNull(Long requesterId, Pageable pageable);
     Optional<FriendRequest> findByRequesterIdAndRecipientIdAndRequestStatus(Long requesterId, Long recipientId, Status status);
     // 받은 요청 조회
-    Page<FriendRequest> findAllByRecipientIdAndRequesterBannedUserIsNull(Long recipientId, Pageable pageable);
+    Page<FriendRequest> findAllByRecipientIdAndRequestStatusAndRequesterBannedUserIsNull(Long recipientId, Status status, Pageable pageable);
     Optional<FriendRequest> findByRecipientIdAndRequesterIdAndRequestStatus(Long recipientId, Long requesterId, Status status);
+
 }
