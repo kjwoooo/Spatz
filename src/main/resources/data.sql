@@ -8,7 +8,7 @@ values (
         '2024-07-31 15:30:00',
         TRUE,
         TRUE,
-        'admin',
+        'ROLE_ADMIN',
         TRUE);
 
 INSERT INTO users (id, email, password, nickname, last_login, connected, marketing_agreed, role, activated)
@@ -20,7 +20,7 @@ values (
         '2024-07-31 15:30:00',
         TRUE,
         TRUE,
-        'user',
+        'ROLE_USER',
         TRUE);
 
 INSERT INTO users (id, email, password, nickname, last_login, connected, marketing_agreed, role, activated)
@@ -32,5 +32,5 @@ values (
         '2024-07-31 15:30:00',
         TRUE,
         TRUE,
-        'user',
+        'ROLE_USER',
         TRUE);

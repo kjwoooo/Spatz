@@ -89,7 +89,7 @@ public class UserService {
                 null,
                 userRegisterDto.isMarketingAgreed(),
                 false,
-                "user",
+                "ROLE_USER",
                 true
         );
 
