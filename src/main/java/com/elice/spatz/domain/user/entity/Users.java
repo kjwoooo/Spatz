@@ -65,4 +65,8 @@ public class Users {
     public void changePassword(String password) {
         this.password = password;
     }
+
+    public void loginBySocial(String nickname) {
+        this.nickname = nickname;
+    }
 }
