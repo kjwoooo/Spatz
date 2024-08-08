@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.dto.request;
+package com.elice.spatz.domain.userfeature.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.entity;
+package com.elice.spatz.domain.userfeature.entity;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
@@ -13,20 +13,17 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "friendship")
-public class Friendship extends BaseEntity {
+@Table(name = "block")
+public class Block extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private Users user;
+    @JoinColumn(name = "blockerId", nullable = false)
+    private Users blocker;
 
     @ManyToOne
-    @JoinColumn(name = "friendId", nullable = false)
-    private Users friend;
-
-    @Column(nullable = false)
-    private boolean friendStatus;
+    @JoinColumn(name = "blockedId", nullable = false)
+    private Users blocked;
 }
