@@ -2,9 +2,9 @@ package com.elice.spatz.domain.userfeature.service;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
-import com.elice.spatz.domain.userfeature.model.dto.request.*;
-import com.elice.spatz.domain.userfeature.model.dto.response.*;
-import com.elice.spatz.domain.userfeature.model.entity.*;
+import com.elice.spatz.domain.userfeature.dto.request.*;
+import com.elice.spatz.domain.userfeature.dto.response.*;
+import com.elice.spatz.domain.userfeature.entity.*;
 import com.elice.spatz.domain.userfeature.repository.*;
 import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
 import com.elice.spatz.exception.exception.UserFeatureException;
@@ -18,10 +18,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.elice.spatz.domain.userfeature.model.entity.Status.*;
+import static com.elice.spatz.domain.userfeature.entity.Status.*;
 import static java.lang.Boolean.TRUE;
 
 @Service
@@ -92,7 +93,7 @@ public class UserFeatureService {
         friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((firend)->{
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
-        friendshipRepository.findByFriendIdAndUserId(recipientId, requesterId).ifPresent((friend)->{
+        friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((friend)->{
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
         bannedUserRepository.findByUserId(recipientId).ifPresent((bannedUser)->{
@@ -124,7 +125,7 @@ public class UserFeatureService {
         if (status.equals("sent")){
             friendRequests = friendRequestRepository.findAllByRequesterIdAndRecipientBannedUserIsNull(userId, pageable);
         } else if (status.equals("received")){
-            friendRequests = friendRequestRepository.findAllByRecipientIdAndRequesterBannedUserIsNull(userId, pageable);
+            friendRequests = friendRequestRepository.findAllByRecipientIdAndRequestStatusAndRequesterBannedUserIsNull(userId, WAITING, pageable);
         } else {
             throw new IllegalArgumentException("Invalid status: " + status);
         }
@@ -137,6 +138,12 @@ public class UserFeatureService {
     // 3. 받은 요청 응답
     @Transactional
     public void responseReceivedFriendRequest(long id, String status){
+        // 예외 체크: 이미 응답한 요청인지 확인
+        List<Status> statuses = Arrays.asList(Status.ACCEPTED, Status.REJECTED);
+        friendRequestRepository.findByIdAndRequestStatusIn(id, statuses).ifPresent(friendRequest -> {
+                    throw new UserFeatureException(UserFeatureErrorCode.ALREADY_RESPONSE);
+        });
+
         FriendRequest receivedFriendRequest = friendRequestRepository.findById(id).orElseThrow();
         if(status.equals("ACCEPTED")){
             receivedFriendRequest.setRequestStatus(ACCEPTED);
@@ -197,7 +204,7 @@ public class UserFeatureService {
     }
     // 2. 친구 검색 조회
     @Transactional
-    public Page<FriendDto> getFriendshipsByKeyword(String keyword, long userId, Pageable pageable){
+    public Page<FriendDto> searchFriendships(String keyword, long userId, Pageable pageable){
         // 내가 userId로 등록된 친구 목록 조회
         Page<Friendship> friendshipsAsUser = friendshipRepository.findAllByUserIdAndFriendBannedUserIsNull(userId, pageable);
         List<FriendDto> userFriends = friendshipsAsUser.getContent().stream()
@@ -270,11 +277,10 @@ public class UserFeatureService {
     @Transactional
     public void updateReport(ReportUpdateDto reportUpdateDto, long id, MultipartFile file)throws IOException {
         // 예외 체크: 수정할 신고 정보가 존재하는지 확인
-        if(!reportRepository.existsById(id)){
-            throw new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT);
-        }
+        Report existingReport = reportRepository.findById(id).orElseThrow(
+                () -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT)
+        );
 
-        Report existingReport = reportRepository.findById(id).orElseThrow();
         existingReport.setReportReason(reportUpdateDto.getReportReason());
         if(!file.isEmpty()){
             byte[] imageBytes = file.getBytes();

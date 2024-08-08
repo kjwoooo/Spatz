@@ -1,9 +1,9 @@
-package com.elice.spatz.domain.userfeature.model.dto.request;
+package com.elice.spatz.domain.userfeature.dto.request;
 
 import com.elice.spatz.domain.user.entity.Users;
-import com.elice.spatz.domain.userfeature.model.entity.Block;
-import com.elice.spatz.domain.userfeature.model.entity.FriendRequest;
-import com.elice.spatz.domain.userfeature.model.entity.Report;
+import com.elice.spatz.domain.userfeature.entity.Block;
+import com.elice.spatz.domain.userfeature.entity.FriendRequest;
+import com.elice.spatz.domain.userfeature.entity.Report;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
