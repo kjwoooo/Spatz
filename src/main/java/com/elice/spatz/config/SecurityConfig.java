@@ -86,6 +86,7 @@ public class SecurityConfig {
                 .exceptionHandling(ehc -> ehc
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .logout(withDefaults());
+                // OAuth2 로그인 시 구글 로그인 페이지로 리다이렉션
 
         return http.build();
     }
