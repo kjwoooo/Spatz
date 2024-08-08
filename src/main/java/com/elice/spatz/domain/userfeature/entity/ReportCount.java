@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.entity;
+package com.elice.spatz.domain.userfeature.entity;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
@@ -15,14 +15,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @Table(name = "reportCount")
 public class ReportCount {
-     @Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 기본 키
 
     @OneToOne
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "userId", nullable = false, unique = true)
     private Users user; // Users 엔티티의 ID를 참조하는 필드
 
     @Column(nullable = false)
     private int reportCount;
+
+    public ReportCount(Users user, int reportCount) {
+        this.user = user;
+        this.reportCount = reportCount;
+    }
 }
