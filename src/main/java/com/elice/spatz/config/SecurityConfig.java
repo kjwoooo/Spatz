@@ -1,5 +1,6 @@
 package com.elice.spatz.config;
 
+import com.elice.spatz.domain.user.service.CustomOAuth2UserService;
 import com.elice.spatz.domain.user.service.TokenProvider;
 import com.elice.spatz.filter.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +38,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final SocialLoginSuccessHandler socialLoginSuccessHandler;
 
     // 인증과정 없이 요청 가능한 url
     String[] urlsToBePermittedAll = {"/hello", "/login", "/h2-console/**", "/**", "/files/**"};
@@ -83,9 +86,15 @@ public class SecurityConfig {
                 // Basic Authentication 이용한 인증작업 실패 시 어떠한 루틴이 실행될 것인가 설정.
                 .httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()))
                 // 403 Forbidden Error 발생 시 어떠한 루틴이 실행될 것인가 설정.
+                .formLogin(AbstractHttpConfigurer::disable)
+                // OAuth2 로그인 시, 리소스 서버로부터 제공받은 사용자 정보를 어떻게 가져올 것인가를 설정.
+                .oauth2Login((olc) -> olc
+                        .userInfoEndpoint((uiec) -> uiec.userService(customOAuth2UserService))
+                        .successHandler(socialLoginSuccessHandler))
                 .exceptionHandling(ehc -> ehc
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .logout(withDefaults());
+                // OAuth2 로그인 시 구글 로그인 페이지로 리다이렉션
 
         return http.build();
     }
