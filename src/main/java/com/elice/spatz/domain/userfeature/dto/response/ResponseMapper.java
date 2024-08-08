@@ -1,10 +1,9 @@
-package com.elice.spatz.domain.userfeature.model.dto.response;
+package com.elice.spatz.domain.userfeature.dto.response;
 
-import com.elice.spatz.domain.user.entity.Users;
-import com.elice.spatz.domain.userfeature.model.entity.Block;
-import com.elice.spatz.domain.userfeature.model.entity.FriendRequest;
-import com.elice.spatz.domain.userfeature.model.entity.Friendship;
-import com.elice.spatz.domain.userfeature.model.entity.Report;
+import com.elice.spatz.domain.userfeature.entity.Block;
+import com.elice.spatz.domain.userfeature.entity.FriendRequest;
+import com.elice.spatz.domain.userfeature.entity.Friendship;
+import com.elice.spatz.domain.userfeature.entity.Report;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -16,11 +15,16 @@ public interface ResponseMapper {
     // 차단
     @Mapping(source = "blocker.id", target = "blockerId")
     @Mapping(source = "blocked.id", target = "blockedId")
+    @Mapping(source = "blocked.nickname", target = "blockedNickname")
     BlockDto blockToBlockDto(Block entity);
 
     // 친구 요청
+    @Mapping(source = "id", target = "friendRequestId")
     @Mapping(source = "requester.id", target = "requesterId")
     @Mapping(source = "recipient.id", target = "recipientId")
+    @Mapping(source = "recipient.nickname", target = "requesterNickname")
+    @Mapping(source = "recipient.nickname", target = "recipientNickname")
+    @Mapping(source = "requestStatus", target = "requestStatus")
     FriendRequestDto friendRequestToFriendRequestDto(FriendRequest entity);
 
     // 친구
@@ -30,9 +34,12 @@ public interface ResponseMapper {
     @Mapping(source = "friend.nickname", target = "friendNickname")
     FriendDto friendshipToFriendDto(Friendship entity);
 
-    // 신고 요청
+    // 신고
     @Mapping(source = "reporter.id", target = "reporterId")
     @Mapping(source = "reported.id", target = "reportedId")
+    @Mapping(source = "reported.nickname", target = "reportedNickname")
+    @Mapping(source = "reportStatus", target = "reportStatus")
     @Mapping(source = "reportReason", target = "reportReason")
+    @Mapping(source = "reportImage", target = "reportImage")
     ReportDto reportToReportDto(Report entity);
 }

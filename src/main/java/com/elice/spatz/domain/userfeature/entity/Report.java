@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.entity;
+package com.elice.spatz.domain.userfeature.entity;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
@@ -19,7 +19,7 @@ public class Report extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "reporterId", nullable = false)
     private Users reporter;
 
@@ -36,5 +36,5 @@ public class Report extends BaseEntity {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status reportStatus;
+    private ReportStatus reportStatus;
 }

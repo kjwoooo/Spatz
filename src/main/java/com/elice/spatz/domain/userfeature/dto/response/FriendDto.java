@@ -1,11 +1,10 @@
-package com.elice.spatz.domain.userfeature.model.dto.response;
+package com.elice.spatz.domain.userfeature.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class FriendDto {
     private Long userId;

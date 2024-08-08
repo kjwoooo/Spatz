@@ -4,9 +4,11 @@ import com.booksajo.bookPanda.exception.dto.ErrorResponse;
 import com.elice.spatz.exception.ErrorCode;
 import com.elice.spatz.exception.dto.UserErrorResponse;
 import com.elice.spatz.exception.errorCode.UserErrorCode;
+import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
 import com.elice.spatz.exception.exception.ChatException;
 import com.elice.spatz.exception.exception.ServerException;
 import com.elice.spatz.exception.exception.UserException;
+import com.elice.spatz.exception.exception.UserFeatureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
@@ -37,6 +39,16 @@ public class GlobalExceptionHandler {
     {
         ErrorCode errorCode = ex.getServerErrorCode();
         return ResponseEntity.status(errorCode.getHttpStatus()).body(errorCode.getMessage());
+    }
+
+    @ExceptionHandler(UserFeatureException.class)
+    public ResponseEntity<UserErrorResponse> handleUserFeatureException(UserFeatureException ex)
+    {
+        UserFeatureErrorCode errorCode = ex.getUserFeatureErrorCode();
+        return ResponseEntity.status(errorCode.getHttpStatus())
+                .body(new UserErrorResponse(errorCode.getHttpStatus().toString().split(" ")[0],
+                        errorCode.getCode(),
+                        errorCode.getMessage()));
     }
 
     // 예외처리에 관한 http를 보내는 코드
