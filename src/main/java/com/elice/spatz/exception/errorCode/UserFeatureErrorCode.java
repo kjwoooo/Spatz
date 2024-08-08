@@ -11,6 +11,9 @@ public enum UserFeatureErrorCode implements ErrorCode {
     // 공통
     NOT_FOUND_USER (HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다.", "UF-000"),
 
+    // 친구 요청 응답, 신고 응답 공통
+    ALREADY_RESPONSE(HttpStatus.BAD_REQUEST, "이미 응답이 완료되었습니다.", "UF-001"),
+
     // 차단
     ALREADY_BLOCKED (HttpStatus.BAD_REQUEST, "이미 차단이 완료된 사용자입니다.", "UF-B-001"),
     BLOCK_USER_SELF (HttpStatus.BAD_REQUEST, "자신을 차단할 수 없습니다.", "UF-B-002"),

@@ -1,4 +1,4 @@
-package com.elice.spatz.domain.userfeature.model.dto.response;
+package com.elice.spatz.domain.userfeature.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,4 +9,5 @@ import lombok.Setter;
 public class BlockDto {
     private long blockerId;
     private long blockedId;
+    private String blockedNickname;
 }

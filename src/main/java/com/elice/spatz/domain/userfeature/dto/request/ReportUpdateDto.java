@@ -1,9 +1,7 @@
-package com.elice.spatz.domain.userfeature.model.dto.request;
+package com.elice.spatz.domain.userfeature.dto.request;
 
-import com.elice.spatz.domain.userfeature.model.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor

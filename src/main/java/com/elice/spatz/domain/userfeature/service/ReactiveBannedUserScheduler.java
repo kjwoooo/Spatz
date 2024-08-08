@@ -2,7 +2,7 @@ package com.elice.spatz.domain.userfeature.service;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
-import com.elice.spatz.domain.userfeature.model.entity.BannedUser;
+import com.elice.spatz.domain.userfeature.entity.BannedUser;
 import com.elice.spatz.domain.userfeature.repository.BannedUserRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportCountRepository;
 import lombok.RequiredArgsConstructor;

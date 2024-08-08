@@ -1,15 +1,16 @@
 package com.elice.spatz.domain.userfeature.controller;
 
 import com.elice.spatz.config.CustomUserDetails;
-import com.elice.spatz.domain.userfeature.model.dto.request.BlockCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.FriendRequestCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.ReportCreateDto;
-import com.elice.spatz.domain.userfeature.model.dto.request.ReportUpdateDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.BlockDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.FriendDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.FriendRequestDto;
-import com.elice.spatz.domain.userfeature.model.dto.response.ReportDto;
-import com.elice.spatz.domain.userfeature.model.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.dto.request.BlockCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.FriendRequestCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.ReportCreateDto;
+import com.elice.spatz.domain.userfeature.dto.request.ReportUpdateDto;
+import com.elice.spatz.domain.userfeature.dto.response.BlockDto;
+import com.elice.spatz.domain.userfeature.dto.response.FriendDto;
+import com.elice.spatz.domain.userfeature.dto.response.FriendRequestDto;
+import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.entity.Status;
 import com.elice.spatz.domain.userfeature.service.UserFeatureService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,8 +31,9 @@ public class UserFeatureController {
     private final UserFeatureService userFeatureService;
 
     // 1. 차단 요청
-    @PostMapping("/block")
-    public ResponseEntity<String> createBlock(@RequestBody BlockCreateDto blockCreateDto){
+    @PostMapping("users/{userId}/block")
+    public ResponseEntity<String> createBlock(@AuthenticationPrincipal CustomUserDetails loginUser, @PathVariable long userId){
+        BlockCreateDto blockCreateDto = new BlockCreateDto(loginUser.getId(), userId);
         userFeatureService.createBlock(blockCreateDto);
         return ResponseEntity.ok("차단이 완료되었습니다.");
     }
@@ -42,15 +44,16 @@ public class UserFeatureController {
         return ResponseEntity.ok(blocks);
     }
     // 3. 차단 해제 (하드딜리트)
-    @DeleteMapping("/unblock")
-    public ResponseEntity<String> unBlock(@RequestParam long blockId){
+    @DeleteMapping("/blocks/{blockId}")
+    public ResponseEntity<String> unBlock(@PathVariable long blockId){
         userFeatureService.unBlock(blockId);
         return ResponseEntity.ok("차단 해제가 완료되었습니다.");
     }
 
     // 1. 친구 요청
-    @PostMapping("/friend-request")
-    public ResponseEntity<String> createFriendRequest(@RequestBody FriendRequestCreateDto friendRequestCreateDto){
+    @PostMapping("/users/{userId}/friend-request")
+    public ResponseEntity<String> createFriendRequest(@AuthenticationPrincipal CustomUserDetails loginUser, @PathVariable long userId){
+        FriendRequestCreateDto friendRequestCreateDto = new FriendRequestCreateDto(loginUser.getId(), userId, Status.WAITING);
         userFeatureService.createFriendRequest(friendRequestCreateDto);
         return ResponseEntity.ok("친구 요청이 완료되었습니다.");
     }
@@ -61,14 +64,14 @@ public class UserFeatureController {
         return ResponseEntity.ok(friendRequests);
     }
     // 3. 받은 요청 응답
-    @PatchMapping("/friend-request")
-    public ResponseEntity<String> responseReceivedFriendRequest(@RequestParam long friendRequestId, @RequestParam String status){
+    @PatchMapping("/friend-requests/{friendRequestId}")
+    public ResponseEntity<String> responseReceivedFriendRequest(@PathVariable long friendRequestId, @RequestParam String status){
         userFeatureService.responseReceivedFriendRequest(friendRequestId, status);
         return ResponseEntity.ok("받은 요청에 대한 응답이 완료되었습니다.");
     }
     // 4. 보낸/받은 요청 삭제 (하드딜리트)
-    @DeleteMapping("/friend-request")
-    public ResponseEntity<String> deleteSentFriendRequest(@RequestParam long friendRequestId){
+    @DeleteMapping("/friend-requests/{friendRequestId}")
+    public ResponseEntity<String> deleteSentFriendRequest(@PathVariable long friendRequestId){
         userFeatureService.deleteSentFriendRequest(friendRequestId);
         return ResponseEntity.ok("보낸 요청이 삭제되었습니다.");
     }
@@ -80,25 +83,25 @@ public class UserFeatureController {
         return ResponseEntity.ok(friendDtos);
     }
     // 2. 친구 검색 조회
-    @GetMapping("/friendships/keyword")
-    public ResponseEntity<Page<FriendDto>> getFriendshipsByKeyword(@AuthenticationPrincipal CustomUserDetails loginUser, @RequestParam String keyword, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<FriendDto> friendDtosByKeyword = userFeatureService.getFriendshipsByKeyword(keyword, loginUser.getId(), pageable);
+    @GetMapping("/friendships/search")
+    public ResponseEntity<Page<FriendDto>> searchFriendships(@AuthenticationPrincipal CustomUserDetails loginUser, @RequestParam String keyword, @PageableDefault(page=0, size=10, sort="createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<FriendDto> friendDtosByKeyword = userFeatureService.searchFriendships(keyword, loginUser.getId(), pageable);
         return ResponseEntity.ok(friendDtosByKeyword);
     }
     // 3. 친구 해제 (하드딜리트)
-    @DeleteMapping("/un-friendship")
-    public ResponseEntity<String> deleteFriendship(@RequestParam long friendshipId){
+    @DeleteMapping("/friendships/{friendshipId}")
+    public ResponseEntity<String> deleteFriendship(@PathVariable long friendshipId){
         userFeatureService.deleteFriendShip(friendshipId);
         return ResponseEntity.ok("친구 삭제가 완료되었습니다.");
     }
 
     // 1. 신고 요청
-    @PostMapping("report")
+    @PostMapping("users/{userId}/report")
     public ResponseEntity<String> createReport(@AuthenticationPrincipal CustomUserDetails loginUser,
-                                               @RequestParam("reportedId") long reportedId,
+                                               @PathVariable long userId,
                                                @RequestParam("reportReason") String reportReason,
                                                @RequestParam("file") MultipartFile file) throws IOException{
-        ReportCreateDto newReportCreateDto = new ReportCreateDto(loginUser.getId(), reportedId, reportReason);
+        ReportCreateDto newReportCreateDto = new ReportCreateDto(loginUser.getId(), userId, reportReason);
         userFeatureService.createReport(newReportCreateDto, file);
         return ResponseEntity.ok("신고 요청이 완료되었습니다.");
     }
@@ -111,19 +114,19 @@ public class UserFeatureController {
         return ResponseEntity.ok(reportDtos);
     }
     // 3. 신고 수정
-    @PutMapping("report")
-    public ResponseEntity<String> updateReport(@RequestParam("reportId") long id,
+    @PutMapping("reports/{reportId}")
+    public ResponseEntity<String> updateReport(@PathVariable long reportId,
                                                @AuthenticationPrincipal CustomUserDetails loginUser,
                                                @RequestParam("reportedId") long reportedId,
                                                @RequestParam("reportReason") String reportReason,
                                                @RequestParam("file") MultipartFile file) throws IOException{
-        ReportUpdateDto updatedReportCreateDto = new ReportUpdateDto(id, loginUser.getId(), reportedId, reportReason);
-        userFeatureService.updateReport(updatedReportCreateDto, id, file);
+        ReportUpdateDto updatedReportCreateDto = new ReportUpdateDto(reportId, loginUser.getId(), reportedId, reportReason);
+        userFeatureService.updateReport(updatedReportCreateDto, reportId, file);
         return ResponseEntity.ok("신고 수정 완료되었습니다.");
     }
     // 4. 처리 전/후 신고 삭제
-    @DeleteMapping("un-report")
-    public ResponseEntity<String> deleteReport(@RequestParam long reportId){
+    @DeleteMapping("reports/{reportId}")
+    public ResponseEntity<String> deleteReport(@PathVariable long reportId){
         userFeatureService.deleteReport(reportId);
         return ResponseEntity.ok("신고 삭제가 완료되었습니다.");
     }
