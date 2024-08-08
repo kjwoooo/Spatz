@@ -41,18 +41,20 @@ public class SocialLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // 소셜 로그인 시에는 일반 로그인과 다르게, Authorization이라는 이름의 쿠키에만 access Token을 발급한다.
         // 백엔드에서 모든 OAuth2 로직을 처리하는 시스템 에서는 이런 방식으로 클라이언트에게 액세스 토큰을 부여해야만 한다.
         // 일반 로그인과 같이 Body 에 access token 과 refresh token 을 부여하는 방식으로는 구현하기가 매우 복잡하다.
-        response.addCookie(createCookie("Authorization", accessToken));
-        response.addCookie(createCookie("Refresh", refreshToken));
+        response.addCookie(createCookie("Authorization", accessToken, true));
+        response.addCookie(createCookie("isAuthorized", "true", false));
+        response.addCookie(createCookie("Refresh", refreshToken, true));
+
         response.sendRedirect("http://localhost:5173/");
     }
 
-    private Cookie createCookie(String key, String value) {
+    private Cookie createCookie(String key, String value, boolean isHttpOnly) {
 
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60*60*60);
         //cookie.setSecure(true);
         cookie.setPath("/");
-        cookie.setHttpOnly(true);
+        cookie.setHttpOnly(isHttpOnly);
 
         return cookie;
     }
