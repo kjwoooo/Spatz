@@ -53,10 +53,17 @@ public class UserController {
 
     // 이메일을 JSON BODY로 받아서, 해당하는 이메일에 해당하는 유저가 있는 지 여부를 체크하는 컨트롤러 기능
     @GetMapping("/users")
-    public ResponseEntity<String> findUserByEmail(@RequestParam String email) {
+    public ResponseEntity<String> findUserByEmail(@RequestParam(required = false) String email, @RequestParam(required = false) String nickname) {
 
-        System.out.println("email = " + email);
-        userService.findByEmail(email);
+        if(email == null && nickname == null)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+        else if(email != null)
+            userService.findByEmail(email);
+        else {
+            userService.findByNickname(nickname);
+        }
+
+
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
