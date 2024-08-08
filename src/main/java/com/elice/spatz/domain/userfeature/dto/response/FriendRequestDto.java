@@ -7,7 +7,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class FriendRequestDto {
+    private Long friendRequestId;
     private Long requesterId;
     private Long recipientId;
+    private String requesterNickname;
+    private String recipientNickname;
     private Status requestStatus;
 }

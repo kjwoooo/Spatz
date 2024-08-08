@@ -15,11 +15,16 @@ public interface ResponseMapper {
     // 차단
     @Mapping(source = "blocker.id", target = "blockerId")
     @Mapping(source = "blocked.id", target = "blockedId")
+    @Mapping(source = "blocked.nickname", target = "blockedNickname")
     BlockDto blockToBlockDto(Block entity);
 
     // 친구 요청
+    @Mapping(source = "id", target = "friendRequestId")
     @Mapping(source = "requester.id", target = "requesterId")
     @Mapping(source = "recipient.id", target = "recipientId")
+    @Mapping(source = "recipient.nickname", target = "requesterNickname")
+    @Mapping(source = "recipient.nickname", target = "recipientNickname")
+    @Mapping(source = "requestStatus", target = "requestStatus")
     FriendRequestDto friendRequestToFriendRequestDto(FriendRequest entity);
 
     // 친구
@@ -32,6 +37,7 @@ public interface ResponseMapper {
     // 신고
     @Mapping(source = "reporter.id", target = "reporterId")
     @Mapping(source = "reported.id", target = "reportedId")
+    @Mapping(source = "reported.nickname", target = "reportedNickname")
     @Mapping(source = "reportStatus", target = "reportStatus")
     @Mapping(source = "reportReason", target = "reportReason")
     @Mapping(source = "reportImage", target = "reportImage")

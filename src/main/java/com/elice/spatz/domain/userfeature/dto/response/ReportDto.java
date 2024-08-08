@@ -9,6 +9,7 @@ import lombok.Getter;
 public class ReportDto {
     private Long reporterId;
     private Long reportedId;
+    private String reportedNickname;
     private ReportStatus reportStatus;
     private String reportReason;
     private byte[] reportImage;
