@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -137,6 +138,12 @@ public class UserFeatureService {
     // 3. 받은 요청 응답
     @Transactional
     public void responseReceivedFriendRequest(long id, String status){
+        // 예외 체크: 이미 응답한 요청인지 확인
+        List<Status> statuses = Arrays.asList(Status.ACCEPTED, Status.REJECTED);
+        friendRequestRepository.findByIdAndRequestStatusIn(id, statuses).ifPresent(friendRequest -> {
+                    throw new UserFeatureException(UserFeatureErrorCode.ALREADY_RESPONSE);
+        });
+
         FriendRequest receivedFriendRequest = friendRequestRepository.findById(id).orElseThrow();
         if(status.equals("ACCEPTED")){
             receivedFriendRequest.setRequestStatus(ACCEPTED);

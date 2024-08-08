@@ -3,10 +3,7 @@ package com.elice.spatz.domain.userfeature.service;
 import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
 import com.elice.spatz.domain.userfeature.dto.response.ResponseMapper;
-import com.elice.spatz.domain.userfeature.entity.BannedUser;
-import com.elice.spatz.domain.userfeature.entity.Report;
-import com.elice.spatz.domain.userfeature.entity.ReportCount;
-import com.elice.spatz.domain.userfeature.entity.ReportStatus;
+import com.elice.spatz.domain.userfeature.entity.*;
 import com.elice.spatz.domain.userfeature.repository.BannedUserRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportCountRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportRepository;
@@ -20,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,8 +58,12 @@ public class AdminFeatureService {
     // 3. 신고 응답
     @Transactional
     public void responseReport(long reportId, ReportStatus reportStatus){
-        // 예외 체크: 응답할 신고 정보가 존재하는지 확인
+        // 예외 체크: 응답할 신고 정보가 존재하는지 확인 -> 이미 응답했는지 확인
         CheckReportExists(reportId);
+        List<ReportStatus> reportStatuses = Arrays.asList(ReportStatus.ACCEPTED, ReportStatus.INSUFFICIENT_EVIDENCE, ReportStatus.INADEQUATE_REASON);
+        reportRepository.findByIdAndReportStatusIn(reportId, reportStatuses).ifPresent(report -> {
+            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_RESPONSE);
+        });
 
         Report report = reportRepository.findById(reportId).orElseThrow();
         report.setReportStatus(reportStatus);
