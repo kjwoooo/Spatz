@@ -12,7 +12,8 @@ import org.mapstruct.factory.Mappers;
 public interface ResponseMapper {
     ResponseMapper INSTANCE = Mappers.getMapper(ResponseMapper.class);
 
-    // 차단
+    // 차단 blockId
+    @Mapping(source = "id", target = "blockId")
     @Mapping(source = "blocker.id", target = "blockerId")
     @Mapping(source = "blocked.id", target = "blockedId")
     @Mapping(source = "blocked.nickname", target = "blockedNickname")
