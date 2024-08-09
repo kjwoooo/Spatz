@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @AllArgsConstructor
 public class BlockDto {
+    private long blockId;
     private long blockerId;
     private long blockedId;
     private String blockedNickname;

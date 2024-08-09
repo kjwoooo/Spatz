@@ -116,12 +116,10 @@ public class UserFeatureController {
     // 3. 신고 수정
     @PutMapping("reports/{reportId}")
     public ResponseEntity<String> updateReport(@PathVariable long reportId,
-                                               @AuthenticationPrincipal CustomUserDetails loginUser,
-                                               @RequestParam("reportedId") long reportedId,
                                                @RequestParam("reportReason") String reportReason,
                                                @RequestParam("file") MultipartFile file) throws IOException{
-        ReportUpdateDto updatedReportCreateDto = new ReportUpdateDto(reportId, loginUser.getId(), reportedId, reportReason);
-        userFeatureService.updateReport(updatedReportCreateDto, reportId, file);
+        ReportUpdateDto reportUpdateDto = new ReportUpdateDto(reportId, reportReason);
+        userFeatureService.updateReport(reportUpdateDto, reportId, file);
         return ResponseEntity.ok("신고 수정 완료되었습니다.");
     }
     // 4. 처리 전/후 신고 삭제
