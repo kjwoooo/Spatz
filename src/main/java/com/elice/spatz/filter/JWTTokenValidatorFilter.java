@@ -56,22 +56,13 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        String accessToken = null;
+        // access token 추출
+        String accessToken = parseBearerToken(request, ApplicationConstants.JWT_HEADER);
 
-        // 쿠키의 Authorization Header 를 검증하여, 소셜 로그인을 통해 로그인한 사용자 여부를 판별.
-        String accessTokenInCookie = getAccessTokenInCookie(request);
-
-        // HTTP Header 를 검증하여, 일반 로그인 사용자 여부 판별
-        String accessTokenInHeader = parseBearerToken(request, ApplicationConstants.JWT_HEADER);
-
-        // 아무런 토큰이 없다면 예외 발생
-        if(accessTokenInCookie == null && accessTokenInHeader == null) {
+        // 액세스 토큰이 없다면 예외 발생
+        if(accessToken == null) {
             JWTTokenExceptionHandler(response, HttpStatus.UNAUTHORIZED, "AU001", "JWT Token이 존재하지 않습니다");
             return;
-        } else if (accessTokenInHeader != null) {
-            accessToken = accessTokenInHeader;
-        } else {
-            accessToken = accessTokenInCookie;
         }
 
         try {
@@ -98,20 +89,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
     }
 
-    private static String getAccessTokenInCookie(HttpServletRequest request) {
-        String accessTokenInCookie = null;
-        Cookie[] cookies = request.getCookies();
 
-        if(cookies == null)
-            return null;
-
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("Authorization")) {
-                accessTokenInCookie = cookie.getValue();
-            }
-        }
-        return accessTokenInCookie;
-    }
 
     // 클라이언트가 보낸 Refresh-Token 을 바탕으로 Access Token 을 재 발급하여 response 의 Header 에 넣는다.
     private void reissueAccessToken(HttpServletRequest request, HttpServletResponse response, ExpiredJwtException exception) {
@@ -163,8 +141,9 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.equals("/apiLogin")
-//                || path.equals("/users")
-                || path.equals("/mails");
+                || path.equals("/users")
+                || path.equals("/mails")
+                || path.equals("/afterSocialLogin");
     }
 
     // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정
