@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.chat.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.io.Serializable;
@@ -15,7 +16,9 @@ public class ChatMessage implements Serializable {
         private String senderId;
         private String senderName;
         private String content;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdTime;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime updatedTime;
         private boolean isDeleted;
         private boolean isEdited;

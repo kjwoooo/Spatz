@@ -3,7 +3,6 @@ package com.elice.spatz.domain.chat.service;
 import com.elice.spatz.domain.chat.entity.ChatMessage;
 import com.elice.spatz.exception.errorCode.ChatErrorCode;
 import com.elice.spatz.exception.exception.ChatException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +19,11 @@ public class ChatService {
     private static final long MESSAGE_TTL = 2 * 24 * 60 * 60;
 
     private final RedisTemplate<String, ChatMessage> redisTemplate;
+    private final ChatChannelService chatChannelService;
 
-    public ChatService(RedisTemplate<String, ChatMessage> redisTemplate) {
+    public ChatService(RedisTemplate<String, ChatMessage> redisTemplate, ChatChannelService chatChannelService) {
         this.redisTemplate = redisTemplate;
+        this.chatChannelService = chatChannelService;
     }
 
     /**
@@ -165,8 +166,7 @@ public class ChatService {
     // 새 메시지 ID 생성 메서드
     private String createNewMessageId(String channelId) {
         String fiveUuid = UUID.randomUUID().toString().substring(0, 5);
-        String fourChannelId = String.format("%04d", Integer.parseInt(channelId) % 10000);
-        return fourChannelId + fiveUuid;
+        return channelId + fiveUuid;
     }
 
 }
