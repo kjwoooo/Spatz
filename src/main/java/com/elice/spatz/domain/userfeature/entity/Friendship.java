@@ -17,7 +17,7 @@ import lombok.Setter;
 public class Friendship extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
