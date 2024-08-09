@@ -12,8 +12,9 @@ import java.util.Optional;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
-    Page<Report> findAllByReporterIdAndReportStatus(Long reporterId, ReportStatus reportStatus, Pageable pageable);
     Page<Report> findAllByReportStatus(ReportStatus reportStatus, Pageable pageable);
+    Page<Report> findAllByReporterIdAndReportStatus(Long reporterId, ReportStatus reportStatus, Pageable pageable);
+    Page<Report> findAllByReporterIdAndReportStatusNot(Long reporterId, ReportStatus reportStatus, Pageable pageable);
     Optional<Report> findByReporterIdAndReportedIdAndReportStatus(Long reporterId, Long reportedId, ReportStatus reportStatus);
     Optional<Report> findByIdAndReportStatusIn(Long reportId, List<ReportStatus> reportStatuses);
 }
