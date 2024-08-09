@@ -21,8 +21,6 @@ public enum UserErrorCode implements ErrorCode {
     NO_JWT_TOKEN(HttpStatus.UNAUTHORIZED, "JWT 토큰이 존재하지 않습니다", "AU001"),
     TAMPERED_TOKEN(HttpStatus.BAD_REQUEST, "JWT 토큰이 임의로 변경되었습니다", "AU002");
 
-
-
     private final HttpStatus status;
     private final String message;
     private final String code;

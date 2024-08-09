@@ -2,6 +2,7 @@ package com.elice.spatz.config;
 
 import com.elice.spatz.domain.user.service.CustomOAuth2UserService;
 import com.elice.spatz.domain.user.service.TokenProvider;
+import com.elice.spatz.exception.handler.GlobalExceptionHandler;
 import com.elice.spatz.filter.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final SocialLoginSuccessHandler socialLoginSuccessHandler;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     // 인증과정 없이 요청 가능한 url
     String[] urlsToBePermittedAll = {"/hello", "/login", "/h2-console/**", "/**", "/files/**"};
