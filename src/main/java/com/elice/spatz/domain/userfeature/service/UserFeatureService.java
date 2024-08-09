@@ -299,7 +299,7 @@ public class UserFeatureService {
         );
 
         existingReport.setReportReason(reportUpdateDto.getReportReason());
-        if(!file.isEmpty()){
+        if (file != null && !file.isEmpty()) {
             byte[] imageBytes = file.getBytes();
             existingReport.setReportImage(imageBytes);
         }
