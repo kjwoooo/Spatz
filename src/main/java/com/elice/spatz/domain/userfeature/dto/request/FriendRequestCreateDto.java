@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FriendRequestCreateDto {
-    private long requesterId;
-    private long recipientId;
+    private Long requesterId;
+    private Long recipientId;
     private Status requestStatus;
 }

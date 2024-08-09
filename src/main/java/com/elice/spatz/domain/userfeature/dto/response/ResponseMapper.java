@@ -29,6 +29,7 @@ public interface ResponseMapper {
     FriendRequestDto friendRequestToFriendRequestDto(FriendRequest entity);
 
     // 친구
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "friend.id", target = "friendId")
     @Mapping(source = "user.nickname", target = "userNickname")
