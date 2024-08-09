@@ -69,7 +69,8 @@ public class SecurityConfig {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setExposedHeaders(List.of("Authorization"));
+                        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+                        // 위의 setAllowCredentials 가 true 이라면 자동으로 Set-Cookie 헤더에 클라이언트에 접근이 가능해진다.
                         config.setMaxAge(3600L);
                         return config;
                     }
