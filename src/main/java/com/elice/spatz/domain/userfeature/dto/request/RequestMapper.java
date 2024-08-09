@@ -32,8 +32,6 @@ public interface RequestMapper {
 
     // 신고 수정
     @Mapping(source = "id", target = "id")
-    @Mapping(source = "reporterId", target = "reporter", qualifiedByName = "idToUser")
-    @Mapping(source = "reportedId", target = "reported", qualifiedByName = "idToUser")
     @Mapping(source = "reportReason", target = "reportReason")
     Report reportUpdateDtoToReport(ReportUpdateDto dto);
 
