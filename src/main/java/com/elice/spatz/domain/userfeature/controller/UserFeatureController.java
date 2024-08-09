@@ -121,7 +121,11 @@ public class UserFeatureController {
         return ResponseEntity.ok(reportDtos);
     }
     // 3. 신고 상세 조회
-
+    @GetMapping("/reports/{reportId}")
+    public ResponseEntity<ReportDto> getReport(@PathVariable Long reportId) {
+        ReportDto reportDto = userFeatureService.getDetailReport(reportId);
+        return ResponseEntity.ok(reportDto);
+    }
     // 4. 신고 이미지 조회
     @GetMapping("/reports/{reportId}/image")
     public ResponseEntity<byte[]> getReportImage(@PathVariable Long reportId) {
