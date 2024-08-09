@@ -41,12 +41,13 @@ public class TokenProvider {
 
 
     // Access Token 을 생성하는 메소드
-    public String createAccessToken(Long userId, String username, String authorities) {
+    public String createAccessToken(Long userId, String username, String email, String role) {
 
         return Jwts.builder().issuer("spatz").subject(username)
                 .claim("userId", userId)
-                .claim("username", username)
-                .claim("authorities", authorities)
+                .claim("nickname", username)
+                .claim("email", email)
+                .claim("role", role)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date().getTime() + ApplicationConstants.ACCESS_TOKEN_EXPIRATION)))
                 .signWith(secretKey).compact();
@@ -80,7 +81,7 @@ public class TokenProvider {
 
         String secret = env.getProperty(ApplicationConstants.JWT_SECRET_KEY, ApplicationConstants.JWT_SECRET_DEFAULT_VALUE);
 
-        return createAccessToken(user.getId(), username, authorities);
+        return createAccessToken(user.getId(), user.getNickname(), user.getEmail(), user.getRole());
 
     }
 
