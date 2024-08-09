@@ -2,6 +2,7 @@ package com.elice.spatz.config;
 
 import com.elice.spatz.domain.user.service.CustomOAuth2UserService;
 import com.elice.spatz.domain.user.service.TokenProvider;
+import com.elice.spatz.exception.handler.GlobalExceptionHandler;
 import com.elice.spatz.filter.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class SecurityConfig {
     private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final SocialLoginSuccessHandler socialLoginSuccessHandler;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
     // 인증과정 없이 요청 가능한 url
     String[] urlsToBePermittedAll = {"/hello", "/login", "/h2-console/**", "/**", "/files/**"};
@@ -67,7 +69,8 @@ public class SecurityConfig {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setExposedHeaders(List.of("Authorization"));
+                        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+                        // 위의 setAllowCredentials 가 true 이라면 자동으로 Set-Cookie 헤더에 클라이언트에 접근이 가능해진다.
                         config.setMaxAge(3600L);
                         return config;
                     }
