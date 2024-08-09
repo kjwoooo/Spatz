@@ -5,8 +5,12 @@ import com.elice.spatz.constants.ApplicationConstants;
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.user.service.TokenProvider;
+import com.elice.spatz.exception.dto.UserErrorResponse;
 import com.elice.spatz.exception.errorCode.UserErrorCode;
 import com.elice.spatz.exception.exception.UserException;
+import com.elice.spatz.exception.handler.GlobalExceptionHandler;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -17,8 +21,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,107 +45,51 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JWTTokenValidatorFilter extends OncePerRequestFilter {
-
-    private boolean isExecutedBefore = false;
 
     private final TokenProvider tokenProvider;
     private final UserRepository userRepository;
+    private final GlobalExceptionHandler globalExceptionHandler;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // 쿠키의 Authorization Header 를 검증하여, 소셜 로그인을 통해 로그인한 사용자 여부를 판별.
-        String accessTokenInCookie = null;
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
+        // access token 추출
+        String accessToken = parseBearerToken(request, ApplicationConstants.JWT_HEADER);
 
-            if (cookie.getName().equals("Authorization")) {
-                accessTokenInCookie = cookie.getValue();
-            }
+        // 액세스 토큰이 없다면 예외 발생
+        if(accessToken == null) {
+            JWTTokenExceptionHandler(response, HttpStatus.UNAUTHORIZED, "AU001", "JWT Token이 존재하지 않습니다");
+            return;
         }
 
-        // HTTP Header 를 검증하여, 일반 로그인 사용자 여부 판별
-        String accessTokenInHeader = parseBearerToken(request, ApplicationConstants.JWT_HEADER);
+        try {
+            // 토큰 유효성을 검사
+            tokenProvider.validateTokenIsExpiredOrTampered(accessToken);
 
-        // 소셜 로그인의 사용자인 경우에 JWT 토큰이 쿠키의 Authorization 키에 담겨있다.
-        if (accessTokenInCookie != null) {
-            try {
-                // 토큰 유효성 검사
-                tokenProvider.validateTokenIsExpiredOrTampered(accessTokenInCookie);
+            // 토큰으로부터 사용자 정보를 추출하여 인증 객체를 생성하고, 그 인증 객체를 Security Context holder 에 저장하는 과정
+            setAuthenticationFromJWTToken(accessToken);
 
-                // 토큰 페이로드 추출
-                Map payloadFromJWTToken = tokenProvider.getPayloadFromJWTToken(accessTokenInCookie);
-
-                Long userId = Long.parseLong(String.valueOf(payloadFromJWTToken.get("userId")));
-                Users user = userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다"));
-
-                CustomUserDetails principal = new CustomUserDetails(userId, user.getEmail(), user.getPassword(), user.getRole(), user.getNickname());
-
-
-                // 인증을 마치고 인증에 성공한 유저의 정보를 Security Context 에 담는 과정
-                // 여기서 첫 번째의 인자로 주입되는 principal 이, @AuthenticationPrincipal 을 통해 주입되는 사용자 정보이다.
-                Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null,
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole()));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (ExpiredJwtException e) {
-                // 클라이언트가 보낸 Access Token 유효기간 만료 시 실행되는 블록
-                reissueAccessToken(request, response, e);
-            }
-            catch (SignatureException e) {
-                // 변조된 JWT 토큰을 보냈을 시 실행되는 블록
-                throw new UserException(UserErrorCode.TAMPERED_TOKEN);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            filterChain.doFilter(request, response);
-
-            // 일반 사용자의 경우 JWT 토큰이 Authorization Header 에 담겨 있다.
-        } else if (accessTokenInHeader != null) {
-            try {
-                // 토큰 유효성 검사
-                tokenProvider.validateTokenIsExpiredOrTampered(accessTokenInHeader);
-
-                // 토큰 페이로드 추출
-                Map payloadFromJWTToken = tokenProvider.getPayloadFromJWTToken(accessTokenInHeader);
-
-                Long userId = Long.parseLong(String.valueOf(payloadFromJWTToken.get("userId")));
-                Users user = userRepository.findById(userId)
-                        .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다"));
-
-                CustomUserDetails principal = new CustomUserDetails(userId, user.getEmail(), user.getPassword(), user.getRole(), user.getNickname());
-
-
-                // 인증을 마치고 인증에 성공한 유저의 정보를 Security Context 에 담는 과정
-                // 여기서 첫 번째의 인자로 주입되는 principal 이, @AuthenticationPrincipal 을 통해 주입되는 사용자 정보이다.
-                Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null,
-                        AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole()));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-            } catch (ExpiredJwtException e) {
-                // 클라이언트가 보낸 Access Token 유효기간 만료 시 실행되는 블록
-                reissueAccessToken(request, response, e);
-            }
-            catch (SignatureException e) {
-                // 변조된 JWT 토큰을 보냈을 시 실행되는 블록
-                throw new UserException(UserErrorCode.TAMPERED_TOKEN);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            filterChain.doFilter(request, response);
-        } else {
-            // 인증이 필요한 URL에 JWT 토큰 없이 접근할 경우 예외 발생
-            throw new UserException(UserErrorCode.NO_JWT_TOKEN);
+        } catch (ExpiredJwtException e) {
+            // 클라이언트가 보낸 Access Token 유효기간 만료 시 Refresh Token 을 이용하여 재발급한다.
+            reissueAccessToken(request, response, e);
         }
+        catch (SignatureException e) {
+            // 변조된 JWT 토큰을 보냈을 시 토큰이 변조되었다는 예외를 발생
+            JWTTokenExceptionHandler(response, HttpStatus.BAD_REQUEST, "AU002", "JWT 토큰 변조가 감지되었습니다.");
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        filterChain.doFilter(request, response);
 
     }
+
+
 
     // 클라이언트가 보낸 Refresh-Token 을 바탕으로 Access Token 을 재 발급하여 response 의 Header 에 넣는다.
     private void reissueAccessToken(HttpServletRequest request, HttpServletResponse response, ExpiredJwtException exception) {
@@ -189,6 +142,46 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         return path.equals("/apiLogin")
                 || path.equals("/users")
-                || path.equals("/mails");
+                || path.equals("/mails")
+                || path.equals("/afterSocialLogin");
+    }
+
+    // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정
+    private void setAuthenticationFromJWTToken (String accessToken) throws JsonProcessingException {
+        Map payloadFromJWTToken = tokenProvider.getPayloadFromJWTToken(accessToken);
+
+        Long userId = Long.parseLong(String.valueOf(payloadFromJWTToken.get("userId")));
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 유저가 없습니다"));
+
+        CustomUserDetails principal = new CustomUserDetails(userId, user.getEmail(), user.getPassword(), user.getRole(), user.getNickname());
+
+        // 여기서 첫 번째의 인자로 주입되는 principal 이, @AuthenticationPrincipal 을 통해 주입되는 사용자 정보이다.
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null,
+                AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    // 토큰에 대한 오류가 발생했을 때, 커스터마이징해서 Exception 처리 값을 클라이언트에게 알려준다.
+    public void JWTTokenExceptionHandler(HttpServletResponse response, HttpStatus status, String code, String msg) {
+        response.setStatus(status.value());
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        try {
+            String json = new ObjectMapper().writeValueAsString(new ExceptionResponseDto(status.toString(), code, msg));
+            response.getWriter().write(json);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class ExceptionResponseDto {
+        private String status;
+        private String code;
+        private String msg;
     }
 }
