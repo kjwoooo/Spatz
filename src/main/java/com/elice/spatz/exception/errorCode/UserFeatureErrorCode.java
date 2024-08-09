@@ -26,11 +26,13 @@ public enum UserFeatureErrorCode implements ErrorCode {
     ALREADY_RECEIVED (HttpStatus.BAD_REQUEST, "이미 상대방에게 친구 요청을 받았습니다. 친구 요청 탭을 확인해주시길 바랍니다.", "UF-F-004"),
     ALREADY_FRIEND(HttpStatus.BAD_REQUEST, "이미 친구 관계인 사용자입니다.", "UF-F-005"),
     ALREADY_UNFRIENDED(HttpStatus.BAD_REQUEST, "이미 친구 해제가 완료되었습니다.", "UF-F-006"),
+    REQUEST_USER_SELF (HttpStatus.BAD_REQUEST, "자신에게 친구 요청을 전송할 수 없습니다.", "UF-B-007"),
 
     // 신고
     ALREADY_REPORTED(HttpStatus.BAD_REQUEST, "동일 사용자에 대한 처리되지 않은 신고 내역이 존재합니다. 처리가 완료된 후 다시 시도해 주시기 바랍니다.", "UF-R-001"),
     NOT_FOUND_REPORT (HttpStatus.NOT_FOUND, "신고 정보를 찾을 수 없습니다.", "UF-R-002"),
-    ALREADY_DELETED (HttpStatus.NOT_FOUND, "이미 삭제된 신고입니다.", "UF-R-003");
+    ALREADY_DELETED (HttpStatus.NOT_FOUND, "이미 삭제된 신고입니다.", "UF-R-003"),
+    REPORT_USER_SELF (HttpStatus.BAD_REQUEST, "자신을 신고할 수 없습니다.", "UF-B-004");
 
     private final HttpStatus status;
     private final String message;
