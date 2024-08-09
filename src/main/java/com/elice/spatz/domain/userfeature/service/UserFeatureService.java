@@ -9,6 +9,7 @@ import com.elice.spatz.domain.userfeature.repository.*;
 import com.elice.spatz.exception.errorCode.UserFeatureErrorCode;
 import com.elice.spatz.exception.exception.UserFeatureException;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -290,12 +291,22 @@ public class UserFeatureService {
                 .collect(Collectors.toList());
         return new PageImpl<>(reportDtoList, pageable, reports.getTotalElements());
     }
-    // 3. 신고 수정
+    // 3. 신고 상세 조회
+    @Transactional
+    public ReportDto getDetailReport(Long id){
+        // 예외 체크: 조회할 신고 정보가 존재하는지 확인
+        Report report = reportRepository.findById(id).orElseThrow(()->
+                new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT)
+        );
+
+        return responseMapper.reportToReportDto(report);
+    }
+    // 4. 신고 수정
     @Transactional
     public void updateReport(ReportUpdateDto reportUpdateDto, Long id, MultipartFile file)throws IOException {
         // 예외 체크: 수정할 신고 정보가 존재하는지 확인
-        Report existingReport = reportRepository.findById(id).orElseThrow(
-                () -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT)
+        Report existingReport = reportRepository.findById(id).orElseThrow(() ->
+                new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT)
         );
 
         existingReport.setReportReason(reportUpdateDto.getReportReason());
@@ -306,7 +317,7 @@ public class UserFeatureService {
 
         reportRepository.save(existingReport);
     }
-    // 4. 처리 전/후 신고 삭제
+    // 5. 처리 전/후 신고 삭제
     @Transactional
     public void deleteReport(Long reportId){
         // 예외 체크: 신고가 이미 철회/삭제되었는지 확인
