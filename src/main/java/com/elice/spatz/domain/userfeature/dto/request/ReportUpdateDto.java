@@ -7,7 +7,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class ReportUpdateDto {
     private long id;
-    private long reporterId;
-    private long reportedId;
     private String reportReason;
 }
