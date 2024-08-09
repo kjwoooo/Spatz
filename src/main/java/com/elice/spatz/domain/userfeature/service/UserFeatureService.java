@@ -47,7 +47,7 @@ public class UserFeatureService {
     // 1. 차단 요청
     @Transactional
     public void createBlock(BlockCreateDto blockCreateDto){
-        // 예외 체크: 차단할 사용자 존재하는지 확인 -> 이미 차단 관계인지 확인 -> 자기 자신을 차단하려는 것인지 확인
+        // 예외 체크: 차단할 사용자 존재하는지 확인 -> 이미 차단 관계인지 확인 -> 차단 대상이 자신인지 확인
         Long blockerId = blockCreateDto.getBlockerId();
         Long blockedId = blockCreateDto.getBlockedId();
         CheckUserExists(blockedId);
@@ -86,10 +86,13 @@ public class UserFeatureService {
     // 1. 친구 요청
     @Transactional
     public void createFriendRequest(FriendRequestCreateDto friendRequestCreateDto){
-        // 예외 체크 1: 요청할 사용자 존재하는지 확인 -> 친구 관계인지 확인 -> 정지된 사용자인지 확인 -> 차단 관계인지 확인
+        // 예외 체크 1: 요청할 사용자 존재하는지 확인 -> 요청 대상이 자신인지 확인 -> 친구 관계인지 확인 -> 정지된 사용자인지 확인 -> 차단 관계인지 확인
         long requesterId = friendRequestCreateDto.getRequesterId();
         long recipientId = friendRequestCreateDto.getRecipientId();
         CheckUserExists(recipientId);
+        if (requesterId == recipientId){
+            throw new UserFeatureException(UserFeatureErrorCode.REQUEST_USER_SELF);
+        }
         friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((firend)->{
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
@@ -254,10 +257,13 @@ public class UserFeatureService {
     // 1. 신고 요청
     @Transactional
     public void createReport(ReportCreateDto reportCreateDto, MultipartFile file)throws IOException {
-        // 예외 체크: 신고할 사용자 존재하는지 확인 -> 이미 전송된 신고가 처리되지 않은 상태인지 확인 ALREADY_REPORTED
+        // 예외 체크: 신고할 사용자 존재하는지 확인 -> 신고한 사용자가 자신인지 확인 -> 이미 전송된 신고가 처리되지 않은 상태인지 확인
         long reporterId = reportCreateDto.getReporterId();
         long reportedId = reportCreateDto.getReportedId();
         CheckUserExists(reportedId);
+        if (reporterId == reportedId){
+            throw new UserFeatureException(UserFeatureErrorCode.REPORT_USER_SELF);
+        }
         reportRepository.findByReporterIdAndReportedIdAndReportStatus(reporterId, reportedId, ReportStatus.WAITING).ifPresent((report)-> {
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_REPORTED);}
         );
@@ -271,7 +277,14 @@ public class UserFeatureService {
     // 2. 처리 전/후 신고 조회
     @Transactional
     public Page<ReportDto> getReports(Long reporterId, ReportStatus reportStatus, Pageable pageable){
-        Page<Report> reports = reportRepository.findAllByReporterIdAndReportStatus(reporterId, reportStatus, pageable);
+        Page<Report> reports;
+        if (reportStatus.equals(ReportStatus.WAITING)) {
+            reports = reportRepository.findAllByReporterIdAndReportStatus(reporterId, reportStatus, pageable);
+        }
+        else {
+            reports = reportRepository.findAllByReporterIdAndReportStatusNot(reporterId, ReportStatus.WAITING, pageable);
+        }
+
         List<ReportDto> reportDtoList = reports.getContent().stream()
                 .map(responseMapper::reportToReportDto)
                 .collect(Collectors.toList());
