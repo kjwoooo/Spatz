@@ -45,10 +45,13 @@ public class SecurityConfig {
 
 
     // 관리자(admin)만 접근이 가능한 리소스 (여기에다만 추가하시면 됩니다)
-    String[] adminUrls = {};
+    String[] adminUrls = {"/admin/**"};
 
     // 인증(로그인)한 사용자만 접근이 가능한 리소스
-    String[] urlsToBeAuthenticated = {"/logout", "/users/password/**"};
+    String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
+                                      "/users/**", "/blocks/**", "/reports/**",
+                                      "/friend-requests/**", "/friendships/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
