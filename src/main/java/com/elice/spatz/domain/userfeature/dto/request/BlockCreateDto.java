@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BlockCreateDto {
-    private long blockerId;
-    private long blockedId;
+    private Long blockerId;
+    private Long blockedId;
 }
