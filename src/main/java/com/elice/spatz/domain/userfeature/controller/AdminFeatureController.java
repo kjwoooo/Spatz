@@ -32,6 +32,6 @@ public class AdminFeatureController {
     @PatchMapping("/admin/reports/{reportId}")
     public ResponseEntity<String> responseReport(@PathVariable Long reportId, @RequestParam ReportStatus reportStatus) {
         adminFeatureService.responseReport(reportId, reportStatus);
-        return ResponseEntity.ok("신고 수정이 완료되었습니다");
+        return ResponseEntity.ok("신고 응답이 완료되었습니다");
     }
 }
