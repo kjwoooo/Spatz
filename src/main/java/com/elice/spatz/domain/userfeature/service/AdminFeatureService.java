@@ -67,6 +67,7 @@ public class AdminFeatureService {
 
         Report report = reportRepository.findById(reportId).orElseThrow();
         report.setReportStatus(reportStatus);
+        reportRepository.save(report);
 
         // 신고 수락시 누적 신고 횟수 추가
         if (reportStatus == ReportStatus.ACCEPTED){
