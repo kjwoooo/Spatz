@@ -6,6 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReportUpdateDto {
-    private long id;
+    private Long id;
     private String reportReason;
 }
