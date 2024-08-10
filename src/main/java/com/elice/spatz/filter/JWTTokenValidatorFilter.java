@@ -135,8 +135,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    // 로그인 시에는 JWT 토큰이 없을 것이므로
-    // JWT Token 검증작업이 수행되면 안 된다.
+    // 인증(로그인)한 사용자만 접근이 가능한 리소스 (SecurityConfig -> urlsToBeAuthenticated 에도 추가하셔야 합니다.)
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
@@ -160,6 +159,8 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(principal, null,
                 AuthorityUtils.commaSeparatedStringToAuthorityList(user.getRole()));
+
+        log.info(authentication.getAuthorities().toString());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
