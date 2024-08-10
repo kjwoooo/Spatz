@@ -29,13 +29,16 @@ public class SocialLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         CustomOAuth2User customUserDetails = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
+        String email = ((CustomOAuth2User) authentication.getPrincipal()).getEmail();
+        String role = ((CustomOAuth2User) authentication.getPrincipal()).getRole();
+        Long id = ((CustomOAuth2User) authentication.getPrincipal()).getId();
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+//        GrantedAuthority auth = iterator.next();
+//        String role = auth.getAuthority();
 
-        String accessToken = tokenProvider.createAccessToken(customUserDetails.getId(), customUserDetails.getUsername(), customUserDetails.getRole());
+        String accessToken = tokenProvider.createAccessToken(id, username, email, role);
         String refreshToken = tokenProvider.createRefreshToken();
 
         // 소셜 로그인 시에는 일반 로그인과 다르게, Authorization이라는 이름의 쿠키에만 access Token을 발급한다.
