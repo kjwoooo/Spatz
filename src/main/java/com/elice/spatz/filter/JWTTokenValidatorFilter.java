@@ -135,7 +135,7 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
-    // 인증(로그인)한 사용자만 접근이 가능한 리소스 (SecurityConfig -> urlsToBeAuthenticated 에도 추가하셔야 합니다.)
+    // 인증(로그인)없어도 접근 가능한 리소스
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
