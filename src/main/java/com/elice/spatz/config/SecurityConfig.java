@@ -43,11 +43,11 @@ public class SecurityConfig {
     private final SocialLoginSuccessHandler socialLoginSuccessHandler;
     private final GlobalExceptionHandler globalExceptionHandler;
 
-    // 인증과정 없이 요청 가능한 url
-    String[] urlsToBePermittedAll = {"/hello", "/login", "/h2-console/**", "/**", "/files/**"};
 
-    // 인증 과정이 필요하여
-    // 인증 없이 요청한 경우 401 Error 반환
+    // 관리자(admin)만 접근이 가능한 리소스 (여기에다만 추가하시면 됩니다)
+    String[] adminUrls = {};
+
+    // 인증(로그인)한 사용자만 접근이 가능한 리소스 (JWTTokenValidatorFilter -> shouldNotFilter 에도 추가하셔야 합니다.)
     String[] urlsToBeAuthenticated = {"/logout", "/users/password/**"};
 
     @Bean
@@ -77,8 +77,10 @@ public class SecurityConfig {
                 }))
                 // 인증이 필요한 url 과 그렇지 않은 url 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/files/**").permitAll()
+                        // 인증을 해야만 접근할 수 있는 url 입니다.
                         .requestMatchers(urlsToBeAuthenticated).authenticated()
+                        // 관리자 권한에게만 허용되는 url 입니다.
+                        .requestMatchers(adminUrls).hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 // 인증 작업 전 JWT 토큰 검증용 필터 추가
