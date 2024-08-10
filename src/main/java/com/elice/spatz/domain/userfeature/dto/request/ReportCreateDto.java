@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class ReportCreateDto {
-    private long reporterId;
-    private long reportedId;
+    private Long reporterId;
+    private Long reportedId;
     private String reportReason;
 }
