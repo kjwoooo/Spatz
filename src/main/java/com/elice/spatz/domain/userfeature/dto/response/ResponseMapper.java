@@ -29,6 +29,7 @@ public interface ResponseMapper {
     FriendRequestDto friendRequestToFriendRequestDto(FriendRequest entity);
 
     // 친구
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "friend.id", target = "friendId")
     @Mapping(source = "user.nickname", target = "userNickname")
@@ -36,11 +37,14 @@ public interface ResponseMapper {
     FriendDto friendshipToFriendDto(Friendship entity);
 
     // 신고
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "reporter.id", target = "reporterId")
     @Mapping(source = "reported.id", target = "reportedId")
+    @Mapping(source = "reporter.nickname", target = "reporterNickname")
     @Mapping(source = "reported.nickname", target = "reportedNickname")
     @Mapping(source = "reportStatus", target = "reportStatus")
     @Mapping(source = "reportReason", target = "reportReason")
     @Mapping(source = "reportImage", target = "reportImage")
+    @Mapping(source = "createdAt", target = "createdAt")
     ReportDto reportToReportDto(Report entity);
 }

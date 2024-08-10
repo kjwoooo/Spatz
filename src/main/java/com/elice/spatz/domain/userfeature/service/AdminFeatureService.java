@@ -48,7 +48,7 @@ public class AdminFeatureService {
     }
     // 2. 신고 상세 조회
     @Transactional
-    public  ReportDto getWaitingReport(long reportId){
+    public  ReportDto getWaitingReport(Long reportId){
         // 예외 체크: 조회할 신고 정보가 존재하는지 확인
         CheckReportExists(reportId);
 
@@ -57,7 +57,7 @@ public class AdminFeatureService {
     }
     // 3. 신고 응답
     @Transactional
-    public void responseReport(long reportId, ReportStatus reportStatus){
+    public void responseReport(Long reportId, ReportStatus reportStatus){
         // 예외 체크: 응답할 신고 정보가 존재하는지 확인 -> 이미 응답했는지 확인
         CheckReportExists(reportId);
         List<ReportStatus> reportStatuses = Arrays.asList(ReportStatus.ACCEPTED, ReportStatus.INSUFFICIENT_EVIDENCE, ReportStatus.INADEQUATE_REASON);
