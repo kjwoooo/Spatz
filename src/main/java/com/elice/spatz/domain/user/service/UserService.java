@@ -49,10 +49,11 @@ public class UserService {
 
             // JWT Access Token 생성
             accessJwtToken = tokenProvider.createAccessToken(
-                    user.getId(),
-                    authenticationResponse.getName(),
-                    authenticationResponse.getAuthorities().stream().map(
-                            GrantedAuthority::getAuthority).collect(Collectors.joining(",")));
+                    user.getId(), user.getNickname(), user.getEmail(), user.getRole());
+//                    user.getId(),
+//                    authenticationResponse.getName(),
+//                    authenticationResponse.getAuthorities().stream().map(
+//                            GrantedAuthority::getAuthority).collect(Collectors.joining(",")));
 
             // JWT Refresh Token 생성
             String refreshToken = tokenProvider.createRefreshToken();
