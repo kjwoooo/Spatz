@@ -1,6 +1,8 @@
 package com.elice.spatz.config;
 
+import com.elice.spatz.domain.user.service.CustomOAuth2UserService;
 import com.elice.spatz.domain.user.service.TokenProvider;
+import com.elice.spatz.exception.handler.GlobalExceptionHandler;
 import com.elice.spatz.filter.JWTTokenValidatorFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +39,22 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 
     private final JWTTokenValidatorFilter jwtTokenValidatorFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final SocialLoginSuccessHandler socialLoginSuccessHandler;
+    private final GlobalExceptionHandler globalExceptionHandler;
 
-    // 인증과정 없이 요청 가능한 url
-    String[] urlsToBePermittedAll = {"/hello", "/login", "/h2-console/**", "/**", "/files/**"};
 
-    // 인증 과정이 필요하여
-    // 인증 없이 요청한 경우 로그인 페이지로 리다이렉션 합니다.
-    String[] urlsToBeAuthenticated = {"/logout"};
+    // 관리자(admin)만 접근이 가능한 리소스 (여기에다만 추가하시면 됩니다)
+    String[] adminUrls = {"/admin/**"};
+
+    // 인증(로그인)한 사용자만 접근이 가능한 리소스
+    String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
+                                      "/users/**", "/blocks/**", "/reports/**",
+                                      "/friend-requests/**", "/friendships/**", "/servers/**"
+    };
+
+    // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
+    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/h2-console/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -66,16 +77,19 @@ public class SecurityConfig {
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
-                        config.setExposedHeaders(List.of("Authorization"));
+                        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+                        // 위의 setAllowCredentials 가 true 이라면 자동으로 Set-Cookie 헤더에 클라이언트에 접근이 가능해진다.
                         config.setMaxAge(3600L);
                         return config;
                     }
                 }))
                 // 인증이 필요한 url 과 그렇지 않은 url 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/files/**").permitAll()
+                        // 인증을 해야만 접근할 수 있는 url 입니다.
+                        .requestMatchers(urlsToBePermittedAll).permitAll()
                         .requestMatchers(urlsToBeAuthenticated).authenticated()
-                        .anyRequest().permitAll()
+                        // 관리자 권한에게만 허용되는 url 입니다.
+                        .requestMatchers(adminUrls).hasRole("ADMIN")
                 )
                 // 인증 작업 전 JWT 토큰 검증용 필터 추가
                 .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
@@ -85,11 +99,15 @@ public class SecurityConfig {
                 // Basic Authentication 이용한 인증작업 실패 시 어떠한 루틴이 실행될 것인가 설정.
                 .httpBasic(hbc -> hbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()))
                 // 403 Forbidden Error 발생 시 어떠한 루틴이 실행될 것인가 설정.
+                .formLogin(AbstractHttpConfigurer::disable)
+                // OAuth2 로그인 시, 리소스 서버로부터 제공받은 사용자 정보를 어떻게 가져올 것인가를 설정.
+                .oauth2Login((olc) -> olc
+                        .userInfoEndpoint((uiec) -> uiec.userService(customOAuth2UserService))
+                        .successHandler(socialLoginSuccessHandler))
                 .exceptionHandling(ehc -> ehc
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
-                // OAuth 이용한 로그인 시 기본 설정.
-                .oauth2Login(Customizer.withDefaults())
                 .logout(withDefaults());
+                // OAuth2 로그인 시 구글 로그인 페이지로 리다이렉션
 
         return http.build();
     }
@@ -99,15 +117,16 @@ public class SecurityConfig {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
-    // apiLogin이라는 사용자 정의 인증 로직을 위해서는, 요청이 들어올 때 authentication process를 시작하도록 하여야 한다.
-    // 그렇게 하기 위해서는 Authentication Manager를 구현해야 함
+    // apiLogin 이라는 사용자 정의 인증 로직을 위해서는, 요청이 들어올 때 authentication process 를 시작하도록 하여야 한다.
+    // 그렇게 하기 위해서는 Authentication Manager 를 구현해야 함
     @Bean
     public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
                                                        PasswordEncoder passwordEncoder) {
         CustomAuthenticationProvider authenticationProvider =
                 new CustomAuthenticationProvider(userDetailsService, passwordEncoder);
+
         ProviderManager providerManager = new ProviderManager(authenticationProvider);
-        providerManager.setEraseCredentialsAfterAuthentication(false); // 인증과정에서 authentication객체의 비밀번호를 지우지 않고 넘겨주어서 사용자 정의 인증로직이 제대로 동작하게 함.
+        providerManager.setEraseCredentialsAfterAuthentication(false); // 인증과정에서 authentication 객체의 비밀번호를 지우지 않고 넘겨주어서 사용자 정의 인증로직이 제대로 동작하게 함.
         return  providerManager;
     }
 
