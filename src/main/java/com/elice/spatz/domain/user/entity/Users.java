@@ -71,4 +71,16 @@ public class Users {
     public void loginBySocial(String nickname) {
         this.nickname = nickname;
     }
+
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changeNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void changeActivationStatus(boolean activationStatus) {
+        this.activated = activationStatus;
+    }
 }

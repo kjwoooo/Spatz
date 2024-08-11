@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public interface ChatChannelRepository extends JpaRepository<ChatChannel, Long> {
     List<ChatChannel> findAllByServerId(Long serverId);
-    List<ChatChannel> findAllByServer(Servers server);
     Optional<ChatChannel> findById(Long id);
 
 
