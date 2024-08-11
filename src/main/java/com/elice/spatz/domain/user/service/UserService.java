@@ -144,4 +144,12 @@ public class UserService {
         // 이메일 변경
         user.changeEmail(email);
     }
+
+    @Transactional
+    public void changeNickname(Long userId, String nickname) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 닉네임 변경
+        user.changeNickname(nickname);
+    }
 }

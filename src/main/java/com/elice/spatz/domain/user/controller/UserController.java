@@ -87,4 +87,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    // 닉네임을 변경하는 함수
+    @PatchMapping("/users/nickname")
+    public ResponseEntity<String> updateUserNickname(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody Map<String, String> requestBody) {
+
+        String nickname = requestBody.get("nickname");
+        userService.changeNickname(customUserDetails.getId(), nickname);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
 }
