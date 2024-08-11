@@ -160,4 +160,12 @@ public class UserService {
         // 계정 활성화 / 비활성화
         user.changeActivationStatus(activationStatus);
     }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 계정 삭제
+        userRepository.delete(user);
+    }
 }

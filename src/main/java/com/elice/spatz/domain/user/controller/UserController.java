@@ -111,4 +111,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    @DeleteMapping("/users")
+    public ResponseEntity<String> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.deleteUser(customUserDetails.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
 }

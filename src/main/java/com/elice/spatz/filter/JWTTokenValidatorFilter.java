@@ -140,7 +140,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.equals("/apiLogin")
-                || path.equals("/users")
                 || path.equals("/mails")
                 || path.startsWith("/h2-console")
                 || path.equals("/afterSocialLogin");
