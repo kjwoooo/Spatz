@@ -50,10 +50,11 @@ public class SecurityConfig {
     // 인증(로그인)한 사용자만 접근이 가능한 리소스
     String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
                                       "/users/**", "/blocks/**", "/reports/**",
-                                      "/friend-requests/**", "/friendships/**"
+                                      "/friend-requests/**", "/friendships/**", "/servers/**"
     };
 
-    String[] urlsToBePermittedAll = {"/users", "/users/*/password", "/mails/**"};
+    // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
+    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/h2-console/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

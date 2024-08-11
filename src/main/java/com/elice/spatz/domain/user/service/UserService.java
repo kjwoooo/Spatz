@@ -136,4 +136,12 @@ public class UserService {
             throw new UserException(UserErrorCode.INVALID_PASSWORD);
         }
     }
+
+    @Transactional
+    public void changeEmail(Long userId, String email) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 이메일 변경
+        user.changeEmail(email);
+    }
 }
