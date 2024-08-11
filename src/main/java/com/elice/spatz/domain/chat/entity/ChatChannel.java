@@ -1,12 +1,12 @@
 package com.elice.spatz.domain.chat.entity;
 
+import com.elice.spatz.domain.server.entity.Servers;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class ChatChannel extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    // DB 연결 끊기위하여 String으로 지정
-    @Column(nullable = false)
-    private String serverId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "server_id", nullable = false)
+    private Servers server;
 }

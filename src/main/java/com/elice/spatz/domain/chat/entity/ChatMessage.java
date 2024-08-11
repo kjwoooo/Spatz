@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.chat.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.io.Serializable;
@@ -13,17 +14,14 @@ public class ChatMessage implements Serializable {
         private String id;
         private String channelId;
         private String senderId;
+        private String senderName;
         private String content;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime createdTime;
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime updatedTime;
         private boolean isDeleted;
         private boolean isEdited;
-
-        public ChatMessage(String channelId, String senderId, String content) {
-                this.channelId = channelId;
-                this.senderId = senderId;
-                this.content = content;
-        }
 
         // 메시지 수정 메서드
         public void updateContent(String newContent) {

@@ -1,5 +1,7 @@
 package com.elice.spatz.config;
 
+import com.elice.spatz.exception.errorCode.UserErrorCode;
+import com.elice.spatz.exception.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,7 +30,8 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         if(passwordEncoder.matches(enteredPassword, userDetails.getPassword())) {
             return new UsernamePasswordAuthenticationToken(enteredEmail, enteredPassword, userDetails.getAuthorities());
         } else {
-            throw new BadCredentialsException("Invalid Password!");
+//            throw new BadCredentialsException("Invalid Password!");
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
         }
 
     }

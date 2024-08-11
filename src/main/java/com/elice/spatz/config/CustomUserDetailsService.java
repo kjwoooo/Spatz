@@ -2,6 +2,8 @@ package com.elice.spatz.config;
 
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
+import com.elice.spatz.exception.errorCode.UserErrorCode;
+import com.elice.spatz.exception.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,10 +26,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with email not found : " + username));
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+//                .orElseThrow(() -> new UsernameNotFoundException("User with email not found : " + username));
+
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
 
-        return new User(user.getEmail(), user.getPassword(), authorities);
+        return new CustomUserDetails(user.getId(), user.getEmail(), user.getPassword(), user.getRole(), user.getNickname());
     }
 }

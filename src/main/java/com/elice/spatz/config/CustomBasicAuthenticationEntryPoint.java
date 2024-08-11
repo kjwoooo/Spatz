@@ -1,5 +1,7 @@
 package com.elice.spatz.config;
 
+import com.elice.spatz.exception.errorCode.UserErrorCode;
+import com.elice.spatz.exception.exception.UserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,5 +32,6 @@ public class CustomBasicAuthenticationEntryPoint implements AuthenticationEntryP
                         message, path);
 
         response.getWriter().write(jsonResponse);
+
     }
 }
