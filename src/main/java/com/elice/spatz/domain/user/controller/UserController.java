@@ -67,4 +67,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    @PostMapping("/users/{userId}/password")
+    public ResponseEntity<String> checkPasswordByUserId(@PathVariable("userId") Long userId, @RequestBody String password) {
+        userService.checkPasswordByUserId(userId, password);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
 }
