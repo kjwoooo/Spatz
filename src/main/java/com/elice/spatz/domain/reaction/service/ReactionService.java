@@ -29,4 +29,13 @@ public class ReactionService {
     public void deleteReaction(Integer id) {
         reactionRepository.deleteById(id);
     }
+
+
+    public void deleteReactionsByMessageId(String messageId) {
+        reactionRepository.deleteByMessageId(messageId);
+    }
+
+    public void deleteReactionByMessageIdAndEmoji(String messageId, String emoji) {
+        reactionRepository.deleteByMessageIdAndEmoji(messageId, emoji);
+    }
 }

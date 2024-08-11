@@ -8,4 +8,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     @Transactional
     void deleteByStorageUrl(String storageUrl);
+
+    boolean existsByStorageUrl(String storageUrl);
 }

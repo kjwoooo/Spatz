@@ -8,5 +8,6 @@ import java.util.List;
 public interface ReactionRepository extends JpaRepository<Reaction, Integer> {
 
     List<Reaction> findByMessageId(String messageId);
-
+    void deleteByMessageId(String messageId);
+    void deleteByMessageIdAndEmoji(String messageId, String emoji);
 }

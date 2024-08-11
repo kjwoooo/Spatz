@@ -1,0 +1,58 @@
+.input-container {
+    display: flex;
+    align-items: center;
+    width: 800px;
+    background-color: #5A5C60;
+    border-radius: 28px;
+    padding: 5px 10px;
+}
+
+.file-upload-button {
+    background-color: transparent;
+    border: none;
+    color: #92959A;
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.message-input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    color: #FFF;
+    outline: none;
+    font-size: 16px;
+    padding: 0 10px;
+}
+
+.emoji-picker-button {
+    background-color: transparent;
+    border: none;
+    color: #92959A;
+    font-size: 24px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.send-button {
+    background-color: #92959A;
+    border: none;
+    color: white;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#pickerContainer {
+    position: absolute;
+    z-index: 1000;
+}

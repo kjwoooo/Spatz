@@ -13,12 +13,12 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.io.OutputStream;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.amazonaws.util.IOUtils;
+import com.elice.spatz.domain.file.dto.FileRequestDto;
+import com.elice.spatz.domain.file.entity.File;
 import com.elice.spatz.domain.file.repository.FileRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,7 +47,7 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, FileRequestDto fileRequestDto) {
         String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
         try {
 
@@ -56,6 +56,15 @@ public class FileService {
             PutObjectRequest request = new PutObjectRequest(bucketName, key, file.getInputStream(), metadata);
             request.withCannedAcl(CannedAccessControlList.AuthenticatedRead); // 접근권한 체크
             PutObjectResult result = s3Client.putObject(request);
+
+            // S3에 업로드 후 메타데이터를 MySQL에 저장
+            File fileEntity = new File();
+            fileEntity.setMessageId(fileRequestDto.getMessageId());
+            fileEntity.setFileName(file.getOriginalFilename());
+            fileEntity.setFileKey(key);
+            fileEntity.setStorageUrl(s3Client.getUrl(bucketName, key).toString());
+            fileRepository.save(fileEntity);
+
             return key;
         } catch (AmazonServiceException e) {
             logger.error("uploadToAWS AmazonServiceException filePath={}, yyyymm={}, error={}", e.getMessage());
@@ -85,12 +94,15 @@ public class FileService {
         return s3Client.doesObjectExist(bucketName, fileName);
     }
 
-    public List<String> listFiles() {
-        ListObjectsV2Request req = new ListObjectsV2Request().withBucketName(bucketName);
-        ListObjectsV2Result result = s3Client.listObjectsV2(req);
-
-        return result.getObjectSummaries().stream()
-                .map(S3ObjectSummary::getKey)
+    public List<Map<String, String>> listFiles() {
+        List<File> files = fileRepository.findAll();
+        return files.stream()
+                .map(file -> {
+                    Map<String, String> fileMap = new HashMap<>();
+                    fileMap.put("fileName", file.getFileName());
+                    fileMap.put("fileKey", file.getFileKey());
+                    return fileMap;
+                })
                 .collect(Collectors.toList());
     }
 
