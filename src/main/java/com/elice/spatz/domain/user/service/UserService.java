@@ -129,4 +129,11 @@ public class UserService {
         String encodedRandomPassword = passwordEncoder.encode(randomPassword);
         user.changePassword(encodedRandomPassword);
     }
+
+    public void checkPasswordByUserId(Long userId, String password) {
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
+        }
+    }
 }
