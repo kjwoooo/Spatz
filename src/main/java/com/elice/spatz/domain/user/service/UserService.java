@@ -129,4 +129,43 @@ public class UserService {
         String encodedRandomPassword = passwordEncoder.encode(randomPassword);
         user.changePassword(encodedRandomPassword);
     }
+
+    public void checkPasswordByUserId(Long userId, String password) {
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new UserException(UserErrorCode.INVALID_PASSWORD);
+        }
+    }
+
+    @Transactional
+    public void changeEmail(Long userId, String email) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 이메일 변경
+        user.changeEmail(email);
+    }
+
+    @Transactional
+    public void changeNickname(Long userId, String nickname) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 닉네임 변경
+        user.changeNickname(nickname);
+    }
+
+    @Transactional
+    public void updateActivation(Long userId, boolean activationStatus) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 계정 활성화 / 비활성화
+        user.changeActivationStatus(activationStatus);
+    }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 계정 삭제
+        userRepository.delete(user);
+    }
 }

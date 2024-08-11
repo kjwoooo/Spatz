@@ -42,15 +42,6 @@ public class UserController {
                 .body(signInResponse);
     }
 
-    @PatchMapping("/users/password")
-    public ResponseEntity<String> updateUserInformation(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody PasswordChangeRequest passwordChangeRequest) {
-
-        userService.changePassword(customUserDetails.getId(), passwordChangeRequest);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
-    }
-
     // 이메일을 JSON BODY로 받아서, 해당하는 이메일에 해당하는 유저가 있는 지 여부를 체크하는 컨트롤러 기능
     @GetMapping("/users")
     public ResponseEntity<String> findUserByEmail(@RequestParam(required = false) String email, @RequestParam(required = false) String nickname) {
@@ -67,4 +58,64 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    // 비밀번호를 체크하는 함수
+    @PostMapping("/users/password")
+    public ResponseEntity<String> checkPasswordByUserId(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody Map<String, String> requestBody) {
+        String password = requestBody.get("password");
+        userService.checkPasswordByUserId(customUserDetails.getId(), password);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
+    // 비밀번호를 변경하는 함수
+    @PatchMapping("/users/password")
+    public ResponseEntity<String> updateUserInformation(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody PasswordChangeRequest passwordChangeRequest) {
+
+        userService.changePassword(customUserDetails.getId(), passwordChangeRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
+    // 이메일을 변경하는 함수
+    @PatchMapping("/users/email")
+    public ResponseEntity<String> updateUserEmail(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody Map<String, String> requestBody) {
+
+        String email = requestBody.get("email");
+        userService.changeEmail(customUserDetails.getId(), email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
+    // 닉네임을 변경하는 함수
+    @PatchMapping("/users/nickname")
+    public ResponseEntity<String> updateUserNickname(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody Map<String, String> requestBody) {
+
+        String nickname = requestBody.get("nickname");
+        userService.changeNickname(customUserDetails.getId(), nickname);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
+    // 계정 활성화 / 비활성화
+    @PatchMapping("/users/activated")
+    public ResponseEntity<String> updateUserActivationStatus(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody Map<String, String> requestBody) {
+
+        String activated = requestBody.get("activated");
+        boolean activationStatus;
+        activationStatus = activated.equals("true");
+        userService.updateActivation(customUserDetails.getId(), activationStatus);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
+    @DeleteMapping("/users")
+    public ResponseEntity<String> deleteUser(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        userService.deleteUser(customUserDetails.getId());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
 }
