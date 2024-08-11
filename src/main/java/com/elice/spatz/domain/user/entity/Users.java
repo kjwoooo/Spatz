@@ -79,4 +79,8 @@ public class Users {
     public void changeNickname(String nickname) {
         this.nickname = nickname;
     }
+
+    public void changeActivationStatus(boolean activationStatus) {
+        this.activated = activationStatus;
+    }
 }
