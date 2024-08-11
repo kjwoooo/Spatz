@@ -97,7 +97,7 @@ public class UserFeatureService {
         friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((firend)->{
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
-        friendshipRepository.findByUserIdAndFriendId(requesterId, recipientId).ifPresent((friend)->{
+        friendshipRepository.findByUserIdAndFriendId(recipientId, requesterId).ifPresent((friend)->{
                 throw new UserFeatureException(UserFeatureErrorCode.ALREADY_FRIEND);}
         );
         bannedUserRepository.findByUserId(recipientId).ifPresent((bannedUser)->{
