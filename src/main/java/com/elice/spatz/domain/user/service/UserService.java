@@ -152,4 +152,12 @@ public class UserService {
         // 닉네임 변경
         user.changeNickname(nickname);
     }
+
+    @Transactional
+    public void updateActivation(Long userId, boolean activationStatus) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+        // 계정 활성화 / 비활성화
+        user.changeActivationStatus(activationStatus);
+    }
 }

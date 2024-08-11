@@ -98,4 +98,17 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    // 계정 활성화 / 비활성화
+    @PatchMapping("/users/activated")
+    public ResponseEntity<String> updateUserActivationStatus(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestBody Map<String, String> requestBody) {
+
+        String activated = requestBody.get("activated");
+        boolean activationStatus;
+        activationStatus = activated.equals("true");
+        userService.updateActivation(customUserDetails.getId(), activationStatus);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+    }
+
 }
