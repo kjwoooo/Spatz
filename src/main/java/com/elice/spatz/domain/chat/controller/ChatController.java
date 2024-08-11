@@ -4,6 +4,8 @@ package com.elice.spatz.domain.chat.controller;
 import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.chat.entity.ChatMessage;
 import com.elice.spatz.domain.chat.service.ChatService;
+import com.elice.spatz.domain.reaction.service.ReactionService;
+import com.elice.spatz.domain.reaction.util.EmojiUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -13,16 +15,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import java.util.List;
+
 @Controller
 public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final ReactionService reactionService; // ReactionService 추가
 
 
-    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate) {
+    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate, ReactionService reactionService) {
         this.chatService = chatService;
         this.messagingTemplate = messagingTemplate;
+        this.reactionService = reactionService;
     }
 
     // 웹소켓을 통해 메시지를 받아 처리 (@MessageMapping)
