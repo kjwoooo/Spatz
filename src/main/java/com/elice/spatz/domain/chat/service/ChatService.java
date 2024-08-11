@@ -111,4 +111,7 @@ public class ChatService {
         return fourChannelId + fiveUuid;
     }
 
+    public ChatMessage findMessageById(String channelId, String messageId) {
+        return hashOperations.get(channelId, messageId);
+    }
 }

@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.file.controller;
 
+import com.elice.spatz.domain.file.dto.FileRequestDto;
 import com.elice.spatz.domain.file.service.FileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/files")
@@ -36,8 +38,8 @@ public class FileUploadController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
-        String key = fileService.uploadFile(file);
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,  @ModelAttribute FileRequestDto fileRequestDto) {
+        String key = fileService.uploadFile(file, fileRequestDto);
         if (!key.isEmpty()) {
             return ResponseEntity.ok(key);
         } else {
@@ -45,15 +47,15 @@ public class FileUploadController {
         }
     }
 
-    @DeleteMapping("/delete/{fileName}")
-    public ResponseEntity<String> deleteFile(@PathVariable String fileName) {
+    @DeleteMapping("/delete/{fileKey}")
+    public ResponseEntity<String> deleteFile(@PathVariable String fileKey) {
         try {
-            boolean fileExists = fileService.doesFileExist(fileName);
+            boolean fileExists = fileService.doesFileExist(fileKey);
             if (!fileExists) {
                 return ResponseEntity.ok("File does not exist.");
             }
 
-            fileService.deleteFile(fileName);
+            fileService.deleteFile(fileKey);
             return ResponseEntity.ok("File delete success.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -63,8 +65,8 @@ public class FileUploadController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<List<String>> listFiles() {
-        List<String> fileList = fileService.listFiles();
+    public ResponseEntity<List<Map<String, String>>> listFiles() {
+        List<Map<String, String>> fileList = fileService.listFiles();
         return ResponseEntity.ok(fileList);
     }
 
