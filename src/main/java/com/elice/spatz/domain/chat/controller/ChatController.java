@@ -55,24 +55,28 @@ public class ChatController {
 
     // 채널의 최근 메시지 50개를 조회하는 REST API
     @GetMapping("/{channelId}/recent")
+    @ResponseBody
     public List<ChatMessage> getRecentMessages(@PathVariable String channelId) {
         return chatService.getRecentMessages(channelId);
     }
 
     // 채널의 모든 메시지를 조회하는 REST API
     @GetMapping("/{channelId}/all")
+    @ResponseBody
     public List<ChatMessage> getAllMessages(@PathVariable String channelId) {
         return chatService.getAllMessagesInChannel(channelId);
     }
 
     // 특정 사용자가 특정 채널에서 보낸 메시지를 조회 (REST API)
     @GetMapping("/{channelId}/user/{senderId}")
+    @ResponseBody
     public List<ChatMessage> getUserMessages(@PathVariable String channelId, @PathVariable String senderId) {
         return chatService.getMessagesBySender(channelId, senderId);
     }
 
     // 메시지 수정 (REST API)
     @PutMapping("/{channelId}/{messageId}")
+    @ResponseBody
     public ChatMessage updateMessage(@PathVariable String channelId,
                                      @PathVariable String messageId,
                                      @RequestBody String newContent) {
@@ -81,6 +85,7 @@ public class ChatController {
 
     // 메시지 삭제 (REST API)
     @DeleteMapping("/{channelId}/{messageId}")
+    @ResponseBody
     public ChatMessage deleteMessage(@PathVariable String channelId, @PathVariable String messageId) {
         return chatService.deleteMessage(channelId, messageId);
     }
