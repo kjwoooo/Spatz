@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import io.openvidu.java.client.*;
 
 @RestController
-@RequestMapping("/openvidu/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/openvidu")
 public class OpenViduController {
 
     @Value("${OPENVIDU_URL}")

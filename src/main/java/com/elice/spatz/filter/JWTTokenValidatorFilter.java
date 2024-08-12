@@ -143,9 +143,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 || path.equals("/users")
                 || path.equals("/mails")
                 || path.equals("/afterSocialLogin")
-                || path.equals("/chats/api/voiceChats")
-                || path.equals("/openvidu/api/sessions")
-                || path.startsWith("/openvidu/api/")
                 || path.startsWith("/h2-console");
 
     }
