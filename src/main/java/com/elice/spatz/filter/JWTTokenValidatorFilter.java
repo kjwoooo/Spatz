@@ -142,7 +142,10 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         return path.equals("/apiLogin")
                 || path.equals("/users")
                 || path.equals("/mails")
-                || path.equals("/afterSocialLogin");
+                || path.equals("/afterSocialLogin")
+                || path.equals("/chats/api/voiceChats")
+                || path.equals("/openvidu/api/sessions")
+                || path.startsWith("/openvidu/api/");
     }
 
     // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정
