@@ -90,6 +90,7 @@ public class SecurityConfig {
                         .requestMatchers(urlsToBeAuthenticated).authenticated()
                         // 관리자 권한에게만 허용되는 url 입니다.
                         .requestMatchers(adminUrls).hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
                 // 인증 작업 전 JWT 토큰 검증용 필터 추가
                 .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)
