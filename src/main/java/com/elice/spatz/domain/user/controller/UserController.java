@@ -123,11 +123,11 @@ public class UserController {
 
 
     @PatchMapping("/users/profile")
-    public ResponseEntity<Void> postUserProfileImage(
+    public ResponseEntity<String> postUserProfileImage(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam("profileImage") MultipartFile multipartFile) throws IOException {
 
-        userService.updateUserProfileImage(customUserDetails.getId(), multipartFile);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        String imgUrl = userService.updateUserProfileImage(customUserDetails.getId(), multipartFile);
+        return ResponseEntity.status(HttpStatus.OK).body(imgUrl);
     }
 }

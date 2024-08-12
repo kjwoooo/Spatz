@@ -53,6 +53,7 @@ public class UserService {
 
         String accessJwtToken = "";
         String refreshJwtToken = "";
+        String profileImage = "";
 
         // 사용자가 입력한 아이디와 비밀번호를 통해서 인증작업 진행
         UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(signInRequest.getUsername(), signInRequest.getPassword());
@@ -60,12 +61,10 @@ public class UserService {
         // 사용자가 입력한 데이터로 수행한 인증 결과를 반환한다.
         Authentication authenticationResponse = authenticationManager.authenticate(authentication);
 
+        Users user = userRepository.findByEmail(authenticationResponse.getName())
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         // 인증이 성공적으로 수행되었다면 다음 블록을 수행
         if(null != authenticationResponse && authenticationResponse.isAuthenticated()) {
-
-            Users user = userRepository.findByEmail(authenticationResponse.getName())
-                    .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
-
             // JWT Access Token 생성
             accessJwtToken = tokenProvider.createAccessToken(
                     user.getId(), user.getNickname(), user.getEmail(), user.getRole());
@@ -85,7 +84,11 @@ public class UserService {
             );
         }
 
-        return new SignInResponse(signInRequest.getUsername(), accessJwtToken, refreshJwtToken);	// 생성자에 토큰 추가
+        String imageUrl = "";
+        if(user.getUsersProfileImage() != null)
+            imageUrl = user.getUsersProfileImage().getImageUrl();
+
+        return new SignInResponse(signInRequest.getUsername(), imageUrl, accessJwtToken, refreshJwtToken);	// 생성자에 토큰 추가
     }
 
     // 회원 가입 기능
@@ -189,7 +192,7 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserProfileImage(Long userId, MultipartFile multipartFile) throws IOException {
+    public String updateUserProfileImage(Long userId, MultipartFile multipartFile) throws IOException {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
 
@@ -223,5 +226,7 @@ public class UserService {
         } else {
             user.getUsersProfileImage().changeImageUrl(imgUrl);
         }
+
+        return imgUrl;
     }
 }
