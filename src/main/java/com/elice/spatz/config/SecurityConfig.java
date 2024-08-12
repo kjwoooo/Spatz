@@ -50,7 +50,8 @@ public class SecurityConfig {
     // 인증(로그인)한 사용자만 접근이 가능한 리소스
     String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
                                       "/users/**", "/blocks/**", "/reports/**",
-                                      "/friend-requests/**", "/friendships/**", "/servers/**"
+                                      "/friend-requests/**", "/friendships/**", "/servers/**",
+                                        "/openvidu/**", "/voiceChats"
     };
 
     // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
