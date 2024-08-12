@@ -2,8 +2,12 @@ package com.elice.spatz.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
+@Getter
 public class UsersProfileImage {
 
     @Id
