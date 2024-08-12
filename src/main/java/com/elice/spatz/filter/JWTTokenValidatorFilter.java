@@ -140,9 +140,14 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
         return path.equals("/apiLogin")
+                || path.equals("/users")
                 || path.equals("/mails")
-                || path.startsWith("/h2-console")
-                || path.equals("/afterSocialLogin");
+                || path.equals("/afterSocialLogin")
+                || path.equals("/chats/api/voiceChats")
+                || path.equals("/openvidu/api/sessions")
+                || path.startsWith("/openvidu/api/")
+                || path.startsWith("/h2-console");
+
     }
 
     // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정
