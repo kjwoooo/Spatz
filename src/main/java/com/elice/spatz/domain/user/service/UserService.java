@@ -3,12 +3,18 @@ package com.elice.spatz.domain.user.service;
 import com.elice.spatz.domain.user.dto.*;
 import com.elice.spatz.domain.user.entity.UserRefreshToken;
 import com.elice.spatz.domain.user.entity.Users;
+import com.elice.spatz.domain.user.entity.UsersProfileImage;
 import com.elice.spatz.domain.user.repository.UserRefreshTokenRepository;
 import com.elice.spatz.domain.user.repository.UserRepository;
+import com.elice.spatz.domain.user.repository.UsersProfileImageRepository;
 import com.elice.spatz.exception.errorCode.UserErrorCode;
 import com.elice.spatz.exception.exception.UserException;
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.WriteChannel;
+import com.google.cloud.storage.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +22,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,9 +38,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final AuthenticationManager authenticationManager;
-    private final Environment env;
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final UsersProfileImageRepository usersProfileImageRepository;
+
+    @Value("${spring.cloud.gcp.storage.credentials.location}")
+    private String keyFileName;
+
+    @Value("${spring.cloud.gcp.storage.bucket}")
+    private String bucketName;
 
     @Transactional
     public SignInResponse signIn(SignInRequest signInRequest) {
@@ -167,5 +186,42 @@ public class UserService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
         // 계정 삭제
         userRepository.delete(user);
+    }
+
+    @Transactional
+    public void updateUserProfileImage(Long userId, MultipartFile multipartFile) throws IOException {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
+        InputStream keyFile = ResourceUtils.getURL(keyFileName).openStream();
+
+        String uuid = UUID.randomUUID().toString();
+        String ext = multipartFile.getContentType();
+
+        Storage storage = StorageOptions.newBuilder()
+                .setCredentials(GoogleCredentials.fromStream(keyFile))
+                .build()
+                .getService();
+
+        String imgUrl = "https://storage.googleapis.com/" + bucketName + "/" + uuid;
+
+        if (multipartFile.isEmpty()) {
+            imgUrl = null;
+        } else {
+            BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, uuid)
+                    .setContentType(ext).build();
+
+            Blob blob = storage.create(blobInfo, multipartFile.getInputStream());
+        }
+
+
+        // 만약 기존에 등록된 유저 이미지가 없다면
+        if (user.getUsersProfileImage() == null) {
+            UsersProfileImage usersProfileImage = new UsersProfileImage(user, imgUrl);
+            usersProfileImageRepository.save(usersProfileImage);
+            user.changeProfileImage(usersProfileImage);
+        } else {
+            user.getUsersProfileImage().changeImageUrl(imgUrl);
+        }
     }
 }

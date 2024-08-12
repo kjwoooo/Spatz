@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "spatz-application-user-profile",
+  "private_key_id": "bddfd7758199b2630026b9b2254fe5e1f72a46da",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCnuW0GE6qS1umS\nlTzY7TBJnJJjPGErRlihLgYHG5Bx8jpbN9UozB74b8KDws2H+RyszaHcNtKoxePX\nYGewJHPqD/qII/4ep0gZIi7SdOt9LiQQn2wFzB7Bet2P/qwnaenCSRriQMEKL5Us\nR+j1wdSlEWitXftwkaOVT6TAR6SPht9ze0Jpf5JGrB8cQuOnxrL2hMgTEFXs2Mr4\nGBBkKnBgE+YQ20ciwTLbNnQ+h9OlE268G32ymfOaoGIwEGDRm3FYMnzZegAGuKxy\nlGXKqGtZQE0SX86GqKLojL74mJDeh8FIxpQt7RthlpxKDfAaDY5f7swNWYPGySyY\nwXXvZKtPAgMBAAECggEAODuSYnGwhCe6ytLvQhmP0XZFnDDPsTcWGv/3tGVY8eMR\nDqky9ckt7wRlVlC3IQnzw7nztQXKbhxezcR8LxGhrU1rJT7QAc36/bY4tYXOuDsC\ni3IvwOfVPfAoHZF4fYRkg6eH9GhacERQwrZfVBoG5crm6g0y8mRZ0IMRzQeYFChM\ncd3moeEK/KO7NH628Ojww5RiIT7nmElWiq99XMMlG95xhf52NmtjEFuAmlsOSUB6\nmY6KfDJdSXp6gl2kUtgYBCWpz1QVsVrEea4LF22IfgnxkUgQUlMlJQaVaAF4rE2s\nYuvTlOMgQfToOClxJVvfrtYM6tIx0oQ4b7nJhDxwaQKBgQDXMAEYXecOILs/+i1b\n4tR2ylS3R2tSMDDc1Oy87zB58aG2D4gz6Zp0DT/4Qe9ahzxMWhGJF06CWJS7aM1V\nfgDFr0UwPzwx4/11hlim7azoCJI8S6Lh19uNk8pu+bPvL/F6yP2C1E7ASWjL4bVy\nhszLez0ie0zIUcmzIAXI23IDRwKBgQDHiPEbyv7CrrPo8kgCPJFTkUN/NbbXpck2\nja6A1Bss0tjov7NqCSL/76sOgqqzB5z2hE143XxBENWwuuYD5LkoJbBWFKQ3dHaI\nyGaWs+rV6GGvx5w7GEh9hHwBeSRRvGamZxU90zMMknKcWzUV6dSuVTRLoutB6X68\n9dIYcOHLuQKBgQDFkYp/379DJmQlYkIBCiq+AhhzyfvMEvjZ2BifgxBD9cjeSjZo\nS0OG559jBM6IlH+VLmDJOH/ZhxDPXHKh2rVEyx5AJN7Ug5nzLGz6nl9RDoWNHHio\n2DH5M8b5ywMcSS1x6VVwqBLB0uSHxGx+gStIa5b+sKwXg5gngPAusORmAwKBgF1n\nFyZhcbwEN6d1souJeqXZu/TSWhK8QmJNFECuCUKEOJFLG1sph76ynCogtHM1vx4O\ndI19cGqszLr74iw0ZxAKBG9nHi/vToVc+djVw7n6G7BDCjkHdvd6iunNoVi5jnua\niXD1alIaQ5g5gbIOUUaCEAbP7rxd5rvhfkV+odPRAoGAdnjhoCc0S8EC5uattv4z\ndOAqn9fPCLTtq2m0NYWKyNLMl+TP/4XhqtITQssU8I26mnK8f1rNUCqC8NUtwFYn\n5tLo/Jo/gFKBKoIo9baUulWNq7q0YtZjwBuKmz0nu6bs8LlLXH2jmYcCH8zX2VcS\nr5sSh7ggaeer1Yq1KWM7FvI=\n-----END PRIVATE KEY-----\n",
+  "client_email": "spatz-547@spatz-application-user-profile.iam.gserviceaccount.com",
+  "client_id": "105196618150058759696",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/spatz-547%40spatz-application-user-profile.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

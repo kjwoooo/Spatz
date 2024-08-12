@@ -26,6 +26,9 @@ public class Users {
     private String role;
     private boolean activated;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    private UsersProfileImage usersProfileImage;
+
     public Users(String email, String password, String nickname, LocalDateTime lastLogin, boolean marketingAgreed, boolean connected, String role, boolean activated) {
         this.email = email;
         this.password = password;
@@ -82,5 +85,9 @@ public class Users {
 
     public void changeActivationStatus(boolean activationStatus) {
         this.activated = activationStatus;
+    }
+
+    public void changeProfileImage(UsersProfileImage usersProfileImage) {
+        this.usersProfileImage = usersProfileImage;
     }
 }
