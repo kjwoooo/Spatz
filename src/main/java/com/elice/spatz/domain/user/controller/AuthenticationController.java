@@ -29,7 +29,7 @@ public class AuthenticationController {
 
         // body 에 담아서 준다.
         return ResponseEntity.status(HttpStatus.OK)
-                .body(new SignInResponse(null, accessTokenInCookie, refreshTokenFromCookie));
+                .body(new SignInResponse(null, null, accessTokenInCookie, refreshTokenFromCookie));
     }
 
     private void deleteAccessTokenAndRefreshTokenFromCookie(HttpServletResponse response) {
