@@ -24,22 +24,24 @@ public class ServerService {
         Servers server = serverRepository.findById(id).orElseThrow(()->
                 new ServerException(ServerErrorCode.SERVER_NOT_FOUND));
 
-        return new ServerDto(server.getName());
+        return new ServerDto(server.getId(),server.getName());
     }
 
     @Transactional(readOnly = true)
     public List<ServerDto> getServers() {
         List<Servers> servers = serverRepository.findAll();
         return servers.stream()
-                .map(server -> new ServerDto(server.getName()))
+                .map(server -> new ServerDto(server.getId(),server.getName()))
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public void createServer(ServerDto serverDto)
+    public ServerDto createServer(ServerDto serverDto)
     {
         Servers newServer = serverDto.toEntity();
         serverRepository.save(newServer);
+        serverDto.setId(newServer.getId());
+        return serverDto;
     }
 
     @Transactional
