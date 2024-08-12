@@ -169,7 +169,4 @@ public class ChatService {
         return channelId + fiveUuid;
     }
 
-//    public ChatMessage findMessageById(String channelId, String messageId) {
-//        return hashOperations.get(channelId, messageId);
-//    }
 }

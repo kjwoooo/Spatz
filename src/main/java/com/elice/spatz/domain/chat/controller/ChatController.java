@@ -4,8 +4,6 @@ package com.elice.spatz.domain.chat.controller;
 import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.chat.entity.ChatMessage;
 import com.elice.spatz.domain.chat.service.ChatService;
-import com.elice.spatz.domain.reaction.service.ReactionService;
-import com.elice.spatz.domain.reaction.util.EmojiUtils;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,13 +18,11 @@ public class ChatController {
 
     private final ChatService chatService;
     private final SimpMessagingTemplate messagingTemplate;
-    private final ReactionService reactionService; // ReactionService 추가
 
 
-    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate, ReactionService reactionService) {
+    public ChatController(ChatService chatService, SimpMessagingTemplate messagingTemplate) {
         this.chatService = chatService;
         this.messagingTemplate = messagingTemplate;
-        this.reactionService = reactionService;
     }
 
     // 웹소켓을 통해 메시지를 받아 처리 (@MessageMapping)
@@ -40,6 +36,9 @@ public class ChatController {
         ChatMessage savedMessage = chatService.SaveMessage(chatMessage);
         // 저장된 메세지를 해당 채널의 구독자에게 보냄
         messagingTemplate.convertAndSend("/topic/channel/" + chatMessage.getChannelId(), savedMessage);
+
+        // 메시지 ID를 클라이언트에게 반환
+        messagingTemplate.convertAndSendToUser(userDetails.getUsername(), "/queue/reply", savedMessage.getId());
     }
 
     // 사용자가 채널에 입장할 때 호출되는 메서드 (@MessageMapping)
