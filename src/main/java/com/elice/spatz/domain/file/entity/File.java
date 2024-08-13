@@ -14,6 +14,8 @@ public class File {
     private Long id;
 
     private Long messageId;
+    private String fileName;
+    private String fileKey;
     private String storageUrl;
 
     @Column(updatable = false)
