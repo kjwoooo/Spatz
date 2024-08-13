@@ -37,7 +37,7 @@ public class UserFeatureController {
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
 
-    // 전체 사용자 조회
+    // 전체 사용자 검색 조회
     @GetMapping("users/search")
     public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String keyword){
         List<UserDto> users = userFeatureService.getUsersByKeyword(keyword);
