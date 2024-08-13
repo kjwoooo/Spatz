@@ -39,8 +39,8 @@ public class UserFeatureController {
 
     // 전체 사용자 검색 조회
     @GetMapping("users/search")
-    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String keyword){
-        List<UserDto> users = userFeatureService.getUsersByKeyword(keyword);
+    public ResponseEntity<List<UserDto>> searchUsers(@AuthenticationPrincipal CustomUserDetails loginUser, @RequestParam String keyword){
+        List<UserDto> users = userFeatureService.getFilteredUsersByKeyword(keyword, loginUser.getId());
         return ResponseEntity.ok(users);
     }
 
