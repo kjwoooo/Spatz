@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import io.openvidu.java.client.*;
 
 @RestController
-@RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/openvidu")
 public class OpenViduController {
 
     @Value("${OPENVIDU_URL}")
@@ -30,8 +29,10 @@ public class OpenViduController {
     public ResponseEntity<String> initializeSession(@RequestBody(required = false) Map<String, Object> params)
         throws OpenViduJavaClientException, OpenViduHttpException {
         SessionProperties properties = SessionProperties.fromJson(params).build();
+        System.out.println("properties: " + properties );
         Session session = openVidu.createSession(properties);
-        return new ResponseEntity<>(session.getSessionId(), HttpStatus.OK);
+        System.out.println(session.getSessionId());
+        return ResponseEntity.status(HttpStatus.OK).body(session.getSessionId());
     }
 
     @PostMapping("/sessions/{sessionId}/connections")
@@ -44,6 +45,7 @@ public class OpenViduController {
         }
         ConnectionProperties properties = ConnectionProperties.fromJson(params).build();
         Connection connection = session.createConnection(properties);
+        System.out.println(connection.getToken());
         return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
     }
 }

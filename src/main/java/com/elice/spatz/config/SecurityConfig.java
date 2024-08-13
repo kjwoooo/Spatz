@@ -50,11 +50,21 @@ public class SecurityConfig {
     // 인증(로그인)한 사용자만 접근이 가능한 리소스
     String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
                                       "/users/**", "/blocks/**", "/reports/**",
-                                      "/friend-requests/**", "/friendships/**", "/servers/**"
+                                      "/friend-requests/**", "/friendships/**", "/servers/**", "/server/**",
+                                        "/openvidu/**", "/voiceChats"
     };
 
     // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
-    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/h2-console/**"};
+    String[] urlsToBePermittedAll = {
+            // 회원가입
+            "/users",
+            // 회원가입 과정에서 필요한 api
+            "/users/password/**", "/users/email/**",  "/users/nickname/**",
+            // 비밀번호 변경용
+            "/mails/**",
+            "/apiLogin/**",
+            "/h2-console/**",
+            "/afterSocialLogin/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -66,6 +76,7 @@ public class SecurityConfig {
                 // JWT 토큰 시스템을 사용하기 위해 jsessionid 발급을 중단.
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(withDefaults())
                 // CORS 설정
                 .cors(corsConfig -> corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
@@ -88,6 +99,7 @@ public class SecurityConfig {
                         .requestMatchers(urlsToBeAuthenticated).authenticated()
                         // 관리자 권한에게만 허용되는 url 입니다.
                         .requestMatchers(adminUrls).hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
                 // 인증 작업 전 JWT 토큰 검증용 필터 추가
                 .addFilterBefore(jwtTokenValidatorFilter, BasicAuthenticationFilter.class)

@@ -34,3 +34,10 @@ values (
         TRUE,
         'ROLE_USER',
         TRUE);
+
+-- user profile image table
+INSERT INTO USERS_PROFILE_IMAGE (id, user_id, image_url)
+values (
+        1,
+        33333,
+        'https://storage.googleapis.com/spatz-user-profile1/80e49c30-7295-4043-b8ad-ef7beb125ebd');

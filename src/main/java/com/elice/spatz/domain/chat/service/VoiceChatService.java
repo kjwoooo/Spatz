@@ -13,6 +13,9 @@ public class VoiceChatService {
     private VoiceChatRepository voiceChatRepository;
 
     public VoiceChat createVoiceChat(VoiceChat voiceChat) {
+        System.out.println(voiceChat);
+//        VoiceChat voiceChat = new VoiceChat();
+//        voiceChat.setName(voiceChatDto.getRoomName());
         return voiceChatRepository.save(voiceChat);
     }
 
