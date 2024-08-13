@@ -45,6 +45,15 @@ public class UserFeatureService {
         );
     }
 
+    // 전체 사용자 조회
+    @Transactional
+    public List<UserDto> getUsersByKeyword(String keyword) {
+        List<Users> users =  userRepository.findAllByNicknameContaining(keyword);
+        return users.stream()
+                .map(responseMapper::usersToUserDto)
+                .collect(Collectors.toList());
+    }
+
     // 1. 차단 요청
     @Transactional
     public void createBlock(BlockCreateDto blockCreateDto){
