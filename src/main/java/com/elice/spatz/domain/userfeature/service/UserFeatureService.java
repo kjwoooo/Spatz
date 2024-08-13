@@ -45,11 +45,26 @@ public class UserFeatureService {
         );
     }
 
-    // 전체 사용자 조회
+    // 친구 요청을 위한 사용자 키워드 조회
     @Transactional
-    public List<UserDto> getUsersByKeyword(String keyword) {
-        List<Users> users =  userRepository.findAllByNicknameContaining(keyword);
-        return users.stream()
+    public List<UserDto> getFilteredUsersByKeyword(String keyword, Long loginUserId) {
+        // 검색된 모든 사용자
+        List<Users> users = userRepository.findAllByNicknameContaining(keyword);
+
+        // 현재 로그인 사용자
+        Users currentUser = userRepository.findById(loginUserId)
+                .orElseThrow(() -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER));
+
+        // 필터링: 본인, 이미 친구인 사용자, 차단한 사용자, 정지된 사용자, 이미 친구 요청을 전송한 사용자 제외
+        List<Users> filteredUsers = users.stream()
+                .filter(user -> !user.getId().equals(loginUserId))
+                .filter(user -> !currentUser.getFriendships().stream().anyMatch(f -> f.getFriend().equals(user)))
+                .filter(user -> !currentUser.getBlockUsers().stream().anyMatch(b -> b.getBlocked().equals(user)))
+                .filter(user -> user.getBannedUser()==null)
+                .filter(user -> currentUser.getSentFriendRequests().stream().noneMatch(req -> req.getRecipient().equals(user)))
+                .collect(Collectors.toList());
+
+        return filteredUsers.stream()
                 .map(responseMapper::usersToUserDto)
                 .collect(Collectors.toList());
     }
