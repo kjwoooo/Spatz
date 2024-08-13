@@ -1,8 +1,10 @@
 package com.elice.spatz.domain.userfeature.service;
 
+import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
 import com.elice.spatz.domain.userfeature.dto.response.ResponseMapper;
+import com.elice.spatz.domain.userfeature.dto.response.UserDto;
 import com.elice.spatz.domain.userfeature.entity.*;
 import com.elice.spatz.domain.userfeature.repository.BannedUserRepository;
 import com.elice.spatz.domain.userfeature.repository.ReportCountRepository;
@@ -35,6 +37,29 @@ public class AdminFeatureService {
         if(!reportRepository.existsById(reportId)){
             throw new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_REPORT);
         }
+    }
+
+    // 1. 전체 사용자 조회
+    @Transactional
+    public Page<UserDto> getAllUsers(Pageable pageable) {
+        Page<Users> users = userRepository.findAll(pageable);
+        List<UserDto> userDtoList = users.getContent().stream()
+                .map(responseMapper::usersToUserDto)
+                .collect(Collectors.toList());
+        return new PageImpl<>(userDtoList, pageable, users.getTotalElements());
+    }
+    // 2. 회원 권한 수정
+    @Transactional
+    public void editUserRole(Long userId, String role){
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER));
+        user.setRole(role);
+        userRepository.save(user);
+    }
+    // 3. 회원 정보 삭제 (탈퇴)
+    @Transactional
+    public void deleteUser(Long userId){
+        Users user = userRepository.findById(userId).orElseThrow(() -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER));
+        userRepository.delete(user);
     }
 
     // 1. 신고 목록 조회

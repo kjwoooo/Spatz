@@ -53,5 +53,6 @@ public interface ResponseMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "email", target = "email")
     @Mapping(source = "nickname", target = "nickname")
+    @Mapping(source = "role", target = "role")
     UserDto usersToUserDto(Users user);
 }
