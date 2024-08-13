@@ -44,23 +44,25 @@ public class UserController {
                 .body(signInResponse);
     }
 
-    // 이메일을 JSON BODY로 받아서, 해당하는 이메일에 해당하는 유저가 있는 지 여부를 체크하는 컨트롤러 기능
-    @GetMapping("/users")
-    public ResponseEntity<String> findUserByEmail(@RequestParam(required = false) String email, @RequestParam(required = false) String nickname) {
+    // 입력된 이메일에 해당하는 유저가 있는 지 여부를 체크하는 기능
+    @PostMapping("/users/email")
+    public ResponseEntity<Void> checkIfEnteredEmailAlreadyExist(@RequestBody Map<String, String> requestBody) {
 
-        if(email == null && nickname == null)
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
-        else if(email != null)
-            userService.findByEmail(email);
-        else {
-            userService.findByNickname(nickname);
-        }
-
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
+        String email = requestBody.get("email");
+        userService.findByEmail(email);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // 비밀번호를 체크하는 함수
+    // 입력된 닉네임에 해당하는 유저가 있는 지 여부를 체크하는 기능
+    @PostMapping("/users/nickname")
+    public ResponseEntity<Void> checkIfEnteredNicknameAlreadyExist(@RequestBody Map<String, String> requestBody) {
+
+        String nickname = requestBody.get("nickname");
+        userService.findByNickname(nickname);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // 유저가 입력한 비밀번호가 맞는 지 체크하는 함수
     @PostMapping("/users/password")
     public ResponseEntity<String> checkPasswordByUserId(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody Map<String, String> requestBody) {
         String password = requestBody.get("password");
@@ -113,6 +115,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("");
     }
 
+    // 유저 삭제
     @DeleteMapping("/users")
     public ResponseEntity<String> deleteUser(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -122,6 +125,7 @@ public class UserController {
     }
 
 
+    // 유저의 프로필 이미지 변경
     @PatchMapping("/users/profile")
     public ResponseEntity<String> postUserProfileImage(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
