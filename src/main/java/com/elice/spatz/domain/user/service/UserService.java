@@ -53,7 +53,7 @@ public class UserService {
 
         String accessJwtToken = "";
         String refreshJwtToken = "";
-        String profileImage = "";
+        String profileImage = "nil";
 
         // 사용자가 입력한 아이디와 비밀번호를 통해서 인증작업 진행
         UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(signInRequest.getUsername(), signInRequest.getPassword());
@@ -63,15 +63,12 @@ public class UserService {
 
         Users user = userRepository.findByEmail(authenticationResponse.getName())
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
+
         // 인증이 성공적으로 수행되었다면 다음 블록을 수행
-        if(null != authenticationResponse && authenticationResponse.isAuthenticated()) {
+        if(authenticationResponse.isAuthenticated()) {
             // JWT Access Token 생성
             accessJwtToken = tokenProvider.createAccessToken(
                     user.getId(), user.getNickname(), user.getEmail(), user.getRole());
-//                    user.getId(),
-//                    authenticationResponse.getName(),
-//                    authenticationResponse.getAuthorities().stream().map(
-//                            GrantedAuthority::getAuthority).collect(Collectors.joining(",")));
 
             // JWT Refresh Token 생성
             String refreshToken = tokenProvider.createRefreshToken();
@@ -84,11 +81,11 @@ public class UserService {
             );
         }
 
-        String imageUrl = "";
+        // 만약 해당 유저의 프로필 이미지가 존재한다면
         if(user.getUsersProfileImage() != null)
-            imageUrl = user.getUsersProfileImage().getImageUrl();
+            profileImage = user.getUsersProfileImage().getImageUrl();
 
-        return new SignInResponse(signInRequest.getUsername(), imageUrl, accessJwtToken, refreshJwtToken);	// 생성자에 토큰 추가
+        return new SignInResponse(signInRequest.getUsername(), profileImage, accessJwtToken, refreshJwtToken);	// 생성자에 토큰 추가
     }
 
     // 회원 가입 기능
