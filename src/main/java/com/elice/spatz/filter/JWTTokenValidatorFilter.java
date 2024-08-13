@@ -147,7 +147,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 || path.equals("/mails")
                 || path.equals("/afterSocialLogin")
                 || path.startsWith("/h2-console");
-
     }
 
     // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정
