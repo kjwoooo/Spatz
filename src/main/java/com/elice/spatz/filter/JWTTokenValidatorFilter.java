@@ -139,9 +139,12 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getServletPath();
+        String method = request.getMethod();
+
+        System.out.println("method = " + method);
+
         return path.equals("/apiLogin")
                 || path.equals("/users")
-                || path.equals("/users/password")
                 || path.equals("/users/email")
                 || path.equals("/users/nickname")
                 || path.equals("/mails")
