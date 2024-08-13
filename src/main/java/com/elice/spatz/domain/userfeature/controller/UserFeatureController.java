@@ -1,14 +1,12 @@
 package com.elice.spatz.domain.userfeature.controller;
 
 import com.elice.spatz.config.CustomUserDetails;
+import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.userfeature.dto.request.BlockCreateDto;
 import com.elice.spatz.domain.userfeature.dto.request.FriendRequestCreateDto;
 import com.elice.spatz.domain.userfeature.dto.request.ReportCreateDto;
 import com.elice.spatz.domain.userfeature.dto.request.ReportUpdateDto;
-import com.elice.spatz.domain.userfeature.dto.response.BlockDto;
-import com.elice.spatz.domain.userfeature.dto.response.FriendDto;
-import com.elice.spatz.domain.userfeature.dto.response.FriendRequestDto;
-import com.elice.spatz.domain.userfeature.dto.response.ReportDto;
+import com.elice.spatz.domain.userfeature.dto.response.*;
 import com.elice.spatz.domain.userfeature.entity.Report;
 import com.elice.spatz.domain.userfeature.entity.ReportStatus;
 import com.elice.spatz.domain.userfeature.entity.Status;
@@ -28,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -36,6 +35,14 @@ import java.util.Optional;
 public class UserFeatureController {
     private final UserFeatureService userFeatureService;
     private final ReportRepository reportRepository;
+    private final UserRepository userRepository;
+
+    // 전체 사용자 검색 조회
+    @GetMapping("users/search")
+    public ResponseEntity<List<UserDto>> searchUsers(@AuthenticationPrincipal CustomUserDetails loginUser, @RequestParam String keyword){
+        List<UserDto> users = userFeatureService.getFilteredUsersByKeyword(keyword, loginUser.getId());
+        return ResponseEntity.ok(users);
+    }
 
     // 1. 차단 요청
     @PostMapping("users/{userId}/block")
