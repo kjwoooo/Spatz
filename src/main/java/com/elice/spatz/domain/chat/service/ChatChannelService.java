@@ -71,15 +71,15 @@ public class ChatChannelService {
     }
 
     // 채널 업데이트 (채널 이름 변경)
-    public ChatChannelDto updateChannel(Long id, ChatChannelDto channelDto) {
-        if (channelDto.getName() == null || channelDto.getName().trim().isEmpty()) {
+    public ChatChannelDto updateChannel(Long id, String newName) {
+        if (newName == null || newName.trim().isEmpty()) {
             throw new ChannelException(ChannelErrorCode.INVALID_CHANNEL_NAME);
         }
 
         ChatChannel channel = chatChannelRepository.findById(id)
                 .orElseThrow(() -> new ChannelException(ChannelErrorCode.CHANNEL_NOT_FOUND));
 
-        channel.setName(channelDto.getName());
+        channel.setName(newName.trim());
         ChatChannel updatedChannel = chatChannelRepository.save(channel);
         return ChatChannelMapper.toDTO(updatedChannel);
     }
