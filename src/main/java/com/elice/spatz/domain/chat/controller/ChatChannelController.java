@@ -51,8 +51,8 @@ public class ChatChannelController {
      * 채널 이름 수정
      */
     @PutMapping("/{channelId}")
-    public ResponseEntity<ChatChannelDto> updateChannel(@PathVariable Long channelId, @RequestBody ChatChannelDto channelDto) {
-        ChatChannelDto updatedChannel = chatChannelService.updateChannel(channelId, channelDto);
+    public ResponseEntity<ChatChannelDto> updateChannel(@PathVariable Long channelId, @RequestBody String newName) {
+        ChatChannelDto updatedChannel = chatChannelService.updateChannel(channelId, newName);
         return ResponseEntity.ok(updatedChannel);
     }
 
