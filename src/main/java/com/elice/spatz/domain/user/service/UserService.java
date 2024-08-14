@@ -1,9 +1,11 @@
 package com.elice.spatz.domain.user.service;
 
 import com.elice.spatz.domain.user.dto.*;
+import com.elice.spatz.domain.user.entity.MailVerificationCode;
 import com.elice.spatz.domain.user.entity.UserRefreshToken;
 import com.elice.spatz.domain.user.entity.Users;
 import com.elice.spatz.domain.user.entity.UsersProfileImage;
+import com.elice.spatz.domain.user.repository.MailVerificationCodeRepository;
 import com.elice.spatz.domain.user.repository.UserRefreshTokenRepository;
 import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.domain.user.repository.UsersProfileImageRepository;
@@ -41,6 +43,7 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final UsersProfileImageRepository usersProfileImageRepository;
+    private final MailVerificationCodeRepository mailVerificationCodeRepository;
 
     @Value("${spring.cloud.gcp.storage.credentials.location}")
     private String keyFileName;
@@ -90,6 +93,14 @@ public class UserService {
 
     // 회원 가입 기능
     public UserRegisterResultDto register(UserRegisterDto userRegisterDto) {
+
+        // 이메일 인증이 시작조차 되지 않은 사용자의 경우에는 이메일 인증이 필요하다는 예외 반환
+        MailVerificationCode mailVerificationCode = mailVerificationCodeRepository.findByEmail(userRegisterDto.getEmail())
+                .orElseThrow(() -> new UserException(UserErrorCode.EMAIL_VERIFICATION_NOT_COMPLETE));
+
+        // 이메일이 송신되었으나 인증이 되지 않은 경우에도 예외 반환
+        if (!mailVerificationCode.isVerified())
+            throw new UserException(UserErrorCode.EMAIL_VERIFICATION_NOT_COMPLETE);
 
         // 이미 사용 중인 이메일일 경우에는 예외 반환
         userRepository.findByEmail(userRegisterDto.getEmail()).ifPresent(user -> {
