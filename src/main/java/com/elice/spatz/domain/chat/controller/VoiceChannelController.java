@@ -33,8 +33,8 @@ public class VoiceChannelController {
     }
 
     @PutMapping("/{voiceChannelId}")
-    public ResponseEntity<VoiceChannelDto> updateChannel(@PathVariable Long voiceChannelId, @RequestBody VoiceChannelDto VoiceChannelDto) {
-        VoiceChannelDto updatedChannelDto = voiceChatService.updateChannel(voiceChannelId, VoiceChannelDto);
+    public ResponseEntity<VoiceChannelDto> updateChannel(@PathVariable Long voiceChannelId, @RequestBody String name) {
+        VoiceChannelDto updatedChannelDto = voiceChatService.updateChannel(voiceChannelId, name);
         return ResponseEntity.status(HttpStatus.OK).body(updatedChannelDto);
     }
 
