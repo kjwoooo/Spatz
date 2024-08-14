@@ -90,11 +90,17 @@ public class GlobalExceptionHandler {
     // Bean validation 에서 입력값 검증 시 발생하는 예외
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        StringBuilder errors = new StringBuilder();
-        ex.getBindingResult().getFieldErrors().forEach(error -> {
-            errors.append(error.getDefaultMessage());
-        });
-        return new ResponseEntity<>(errors.toString(), HttpStatus.BAD_REQUEST);
+//        StringBuilder errors = new StringBuilder();
+//        ex.getBindingResult().getFieldErrors().forEach(error -> {
+//            errors.append(error.getDefaultMessage());
+//        });
+        // 첫 번째 필드 에러만 가져오기
+        String firstError = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst() // 첫 번째 에러를 찾아서
+                .map(error -> error.getDefaultMessage())
+                .orElse("Validation Error");
+
+        return new ResponseEntity<>(firstError, HttpStatus.BAD_REQUEST);
     }
 
 
