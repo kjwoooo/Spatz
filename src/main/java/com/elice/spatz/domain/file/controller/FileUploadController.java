@@ -42,13 +42,14 @@ public class FileUploadController {
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<File>> ListFilesByUserId(@PathVariable Long userId) {
-        // 채널 ID에 해당하는 파일 목록 가져오기
+        // 유저 ID에 해당하는 파일 목록 가져오기
         List<File> fileList = fileService.listFilesByUserId(userId);
         return ResponseEntity.ok(fileList);
     }
 
     @PostMapping("/upload")
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file,  @ModelAttribute FileRequestDto fileRequestDto) {
+        System.out.println("Received userId: " + fileRequestDto.getUserId());
         String key = fileService.uploadFile(file, fileRequestDto);
         if (!key.isEmpty()) {
             return ResponseEntity.ok(key);
