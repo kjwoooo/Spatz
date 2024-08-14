@@ -64,7 +64,10 @@ public class SecurityConfig {
             "/mails/**",
             "/apiLogin/**",
             "/h2-console/**",
-            "/afterSocialLogin/**"};
+            "/afterSocialLogin/**",
+            "/files/**",
+            "/reactions/**"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
