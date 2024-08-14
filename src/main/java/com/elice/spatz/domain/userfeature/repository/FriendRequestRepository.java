@@ -22,4 +22,7 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
 
     // 응답하지 않은 요청 조회
     Optional<FriendRequest> findByIdAndRequestStatusIn(Long id, List<Status> statuses);
+
+    // 삭제
+    void deleteByRequesterIdAndRecipientId(Long requesterId, Long recipientId);
 }
