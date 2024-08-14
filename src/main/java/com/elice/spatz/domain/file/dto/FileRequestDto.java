@@ -7,4 +7,5 @@ import java.util.UUID;
 public class FileRequestDto {
     private UUID messageId;
     private Long channelId;
+    private Long userId;
 }
