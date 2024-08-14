@@ -38,14 +38,14 @@ public class UserFeatureController {
     private final UserRepository userRepository;
 
     // 전체 사용자 검색 조회
-    @GetMapping("users/search")
+    @GetMapping("/users/search")
     public ResponseEntity<List<UserDto>> searchUsers(@AuthenticationPrincipal CustomUserDetails loginUser, @RequestParam String keyword){
         List<UserDto> users = userFeatureService.getFilteredUsersByKeyword(keyword, loginUser.getId());
         return ResponseEntity.ok(users);
     }
 
     // 1. 차단 요청
-    @PostMapping("users/{userId}/block")
+    @PostMapping("/users/{userId}/block")
     public ResponseEntity<String> createBlock(@AuthenticationPrincipal CustomUserDetails loginUser, @PathVariable Long userId){
         BlockCreateDto blockCreateDto = new BlockCreateDto(loginUser.getId(), userId);
         userFeatureService.createBlock(blockCreateDto);
