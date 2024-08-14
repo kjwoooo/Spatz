@@ -141,15 +141,14 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         String method = request.getMethod();
 
-        System.out.println("method = " + method);
-
         return path.equals("/apiLogin")
                 || path.equals("/users")
                 || path.equals("/users/email")
                 || path.equals("/users/nickname")
                 || path.equals("/mails")
                 || path.equals("/afterSocialLogin")
-                || path.startsWith("/h2-console");
+                || path.startsWith("/h2-console")
+                || path.startsWith("/files");
     }
 
     // 토큰으로부터 사용자 정보를 추출 후 인증 객체를 생성해 SecurityContextHolder 에 넣는 과정

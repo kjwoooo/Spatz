@@ -1,8 +1,10 @@
 package com.elice.spatz.domain.file.dto;
 
 import lombok.Data;
+import java.util.UUID;
 
 @Data
 public class FileRequestDto {
-    private Long messageId;
+    private UUID messageId;
+    private Long channelId;
 }

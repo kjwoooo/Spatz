@@ -1,6 +1,7 @@
 package com.elice.spatz.domain.file.controller;
 
 import com.elice.spatz.domain.file.dto.FileRequestDto;
+import com.elice.spatz.domain.file.entity.File;
 import com.elice.spatz.domain.file.service.FileService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,9 +33,11 @@ public class FileUploadController {
         return ResponseEntity.ok("Test successful");
     }
 
-    @GetMapping("/frontTest")
-    public String frontTest(){
-        return "/index.html";
+    @GetMapping("/channel/{channelId}")
+    public ResponseEntity<List<File>> ListFilesByChannelId(@PathVariable Long channelId) {
+        // 채널 ID에 해당하는 파일 목록 가져오기
+        List<File> fileList = fileService.listFilesByChannelId(channelId);
+        return ResponseEntity.ok(fileList);
     }
 
     @PostMapping("/upload")

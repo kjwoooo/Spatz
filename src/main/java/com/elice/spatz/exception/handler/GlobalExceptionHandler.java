@@ -12,9 +12,11 @@ import com.elice.spatz.exception.exception.ServerException;
 import com.elice.spatz.exception.exception.UserException;
 import com.elice.spatz.exception.exception.UserFeatureException;
 import com.elice.spatz.exception.exception.VoiceChannelException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -83,6 +85,22 @@ public class GlobalExceptionHandler {
         ErrorCode errorCode = ex.getChatErrorCode();
         ErrorResponse errorResponse = makeErrorResponse(errorCode, errorCode.getMessage());
         messagingTemplate.convertAndSend("/topic/errors", errorResponse);
+    }
+
+    // Bean validation 에서 입력값 검증 시 발생하는 예외
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//        StringBuilder errors = new StringBuilder();
+//        ex.getBindingResult().getFieldErrors().forEach(error -> {
+//            errors.append(error.getDefaultMessage());
+//        });
+        // 첫 번째 필드 에러만 가져오기
+        String firstError = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst() // 첫 번째 에러를 찾아서
+                .map(error -> error.getDefaultMessage())
+                .orElse("Validation Error");
+
+        return new ResponseEntity<>(firstError, HttpStatus.BAD_REQUEST);
     }
 
 

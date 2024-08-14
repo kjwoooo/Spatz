@@ -4,6 +4,7 @@ import com.amazonaws.Response;
 import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.user.dto.*;
 import com.elice.spatz.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class UserController {
 
     // 회원 가입 처리
     @PostMapping("/users")
-    public ResponseEntity<UserRegisterResultDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<UserRegisterResultDto> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         String hashedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
         userRegisterDto.setPassword(hashedPassword);
 
@@ -36,7 +37,7 @@ public class UserController {
 
 
     @PostMapping("/apiLogin")
-    public ResponseEntity<SignInResponse> apiLogin(@RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<SignInResponse> apiLogin(@Valid @RequestBody SignInRequest signInRequest) {
 
         SignInResponse signInResponse = userService.signIn(signInRequest);
 
