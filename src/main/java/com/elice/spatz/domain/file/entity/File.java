@@ -1,6 +1,7 @@
 package com.elice.spatz.domain.file.entity;
 
 import com.elice.spatz.domain.chat.entity.ChatChannel;
+import com.elice.spatz.domain.user.entity.Users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -24,6 +25,11 @@ public class File {
     @JoinColumn(name = "channel_id", nullable = true)
     @JsonIgnore // 직렬화에서 제외
     private ChatChannel channel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = true)
+    @JsonIgnore // 직렬화에서 제외
+    private Users user;  // 유저 필드 추가
 
     private String fileName;
     private String fileKey;
