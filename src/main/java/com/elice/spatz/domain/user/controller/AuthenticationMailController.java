@@ -1,11 +1,14 @@
 package com.elice.spatz.domain.user.controller;
 
+import com.elice.spatz.domain.user.dto.SendVerificationRequest;
 import com.elice.spatz.domain.user.service.EmailService;
 import com.elice.spatz.domain.user.service.MailVerificationCodeService;
 import com.elice.spatz.domain.user.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.SecureRandom;
@@ -21,7 +24,9 @@ public class AuthenticationMailController {
 
 
     @PostMapping("/mails")
-    public ResponseEntity<String> mailVeryficationCode(@RequestParam String email) {
+    public ResponseEntity<Void> mailVerificationCode(@Valid @RequestBody SendVerificationRequest sendVerificationRequest) {
+        String email = sendVerificationRequest.getEmail();
+
         // 이메일 송신 후
         String code = generateRandom6DigitCode();
         emailService.sendEmail(email, "spatz application verification code", code);
@@ -29,7 +34,7 @@ public class AuthenticationMailController {
         // 데이터베이스 저장
         mailVerificationCodeService.verificationCodeSave(email, code);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(code);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     // 사용자가 확인코드를 입력하고 인증 버튼을 눌렀을 때 동작하는 메소드

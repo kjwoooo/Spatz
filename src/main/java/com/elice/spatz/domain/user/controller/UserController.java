@@ -26,7 +26,7 @@ public class UserController {
 
     // 회원 가입 처리
     @PostMapping("/users")
-    public ResponseEntity<UserRegisterResultDto> register(@RequestBody UserRegisterDto userRegisterDto) {
+    public ResponseEntity<UserRegisterResultDto> register(@Valid @RequestBody UserRegisterDto userRegisterDto) {
         String hashedPassword = passwordEncoder.encode(userRegisterDto.getPassword());
         userRegisterDto.setPassword(hashedPassword);
 
