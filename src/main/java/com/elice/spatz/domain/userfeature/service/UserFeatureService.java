@@ -45,7 +45,21 @@ public class UserFeatureService {
         );
     }
 
-    // 친구 요청을 위한 사용자 키워드 조회
+    // 친구 요청을 위한 사용자 키워드 검색 - 필터링 메서드
+    private boolean isFriend(Users currentUser, Users user) {
+        return currentUser.getFriendships().stream().anyMatch(f -> f.getFriend().equals(user)) ||
+                user.getFriendships().stream().anyMatch(f -> f.getFriend().equals(currentUser));
+    }
+    private boolean isBlocked(Users currentUser, Users user) {
+        return currentUser.getBlockUsers().stream().anyMatch(b -> b.getBlocked().equals(user)) ||
+                user.getBlockUsers().stream().anyMatch(b -> b.getBlocked().equals(currentUser));
+    }
+    private boolean hasSentFriendRequest(Users currentUser, Users user) {
+        return currentUser.getSentFriendRequests().stream().anyMatch(req -> req.getRecipient().equals(user)) ||
+                user.getSentFriendRequests().stream().anyMatch(req -> req.getRequester().equals(currentUser));
+    }
+
+    // 친구 요청을 위한 사용자 키워드 검색 - 검색 메서드
     @Transactional
     public List<UserDto> getFilteredUsersByKeyword(String keyword, Long loginUserId) {
         // 검색된 모든 사용자
@@ -55,13 +69,13 @@ public class UserFeatureService {
         Users currentUser = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new UserFeatureException(UserFeatureErrorCode.NOT_FOUND_USER));
 
-        // 필터링: 본인, 이미 친구인 사용자, 차단한 사용자, 정지된 사용자, 이미 친구 요청을 전송한 사용자 제외
+        // 필터링
         List<Users> filteredUsers = users.stream()
-                .filter(user -> !user.getId().equals(loginUserId))
-                .filter(user -> !currentUser.getFriendships().stream().anyMatch(f -> f.getFriend().equals(user)))
-                .filter(user -> !currentUser.getBlockUsers().stream().anyMatch(b -> b.getBlocked().equals(user)))
-                .filter(user -> user.getBannedUser()==null)
-                .filter(user -> currentUser.getSentFriendRequests().stream().noneMatch(req -> req.getRecipient().equals(user)))
+                .filter(user -> !user.getId().equals(loginUserId)) // 본인 제외
+                .filter(user -> !isFriend(currentUser, user)) // 친구 제외
+                .filter(user -> !isBlocked(currentUser, user)) // 차단한 사용자 제외
+                .filter(user -> user.getBannedUser() == null) // 정지된 사용자 제외
+                .filter(user -> !hasSentFriendRequest(currentUser, user)) // 이미 친구 요청을 전송한 사용자 제외
                 .collect(Collectors.toList());
 
         return filteredUsers.stream()
@@ -272,9 +286,13 @@ public class UserFeatureService {
     @Transactional
     public void deleteFriendShip(Long id){
         // 예외 체크: 이미 친구 해제된 상태인지 확인
-        if(!friendshipRepository.existsById(id)){
-            throw new UserFeatureException(UserFeatureErrorCode.ALREADY_UNFRIENDED);
-        }
+        Friendship friendship = friendshipRepository.findById(id).orElseThrow(() -> new UserFeatureException(UserFeatureErrorCode.ALREADY_UNFRIENDED));
+
+        // 친구 요청 데이터 삭제
+        Long userId = friendship.getUser().getId();
+        Long friendId = friendship.getFriend().getId();
+        friendRequestRepository.deleteByRequesterIdAndRecipientId(userId, friendId);
+        friendRequestRepository.deleteByRequesterIdAndRecipientId(friendId, userId);
 
         friendshipRepository.deleteById(id);
     }
