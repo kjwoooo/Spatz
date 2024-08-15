@@ -2,7 +2,12 @@ package com.elice.spatz.domain.server.entity;
 
 import com.elice.spatz.domain.serverUser.entity.ServerUser;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import lombok.*;
 
@@ -13,6 +18,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Servers extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,7 +29,7 @@ public class Servers extends BaseEntity {
 
     private String inviteCode;
 
-    @OneToMany(mappedBy = "server")
+    @OneToMany(mappedBy = "server", cascade = CascadeType.ALL)
     private List<ServerUser> serverUsers;
 
 }

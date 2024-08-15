@@ -12,6 +12,8 @@ import com.elice.spatz.domain.user.repository.UserRepository;
 import com.elice.spatz.exception.errorCode.ServerErrorCode;
 import com.elice.spatz.exception.errorCode.UserErrorCode;
 import com.elice.spatz.exception.exception.ServerException;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 import com.elice.spatz.exception.exception.UserException;
@@ -55,12 +57,19 @@ public class ServerService {
     }
 
     @Transactional
-    public ServerDto createServer(ServerDto serverDto, Long UserId)
+    public ServerDto createServer(ServerDto serverDto, Long id)
     {
         Servers newServer = serverDto.toEntity();
+        newServer.setServerUsers(new ArrayList<>());
         newServer.setInviteCode(generateInviteCode());
+        Users user = userRepository.findById(id).orElseThrow(()->
+                new UserException(UserErrorCode.USER_NOT_FOUND));
+        ServerUserDto serverUserDto = new ServerUserDto(newServer, user);
+        newServer.getServerUsers().add(serverUserDto.toEntity());
         serverRepository.save(newServer);
         serverDto.setId(newServer.getId());
+        serverDto.setServerUsers(newServer.getServerUsers());
+        System.out.println();
         return serverDto;
     }
 
@@ -96,8 +105,7 @@ public class ServerService {
         Servers server = serverRepository.findByInviteCode(code).orElseThrow(()->
                 new ServerException(ServerErrorCode.SERVER_NOT_FOUND));
         ServerUserDto serverUserDto = new ServerUserDto(server,user);
-        ServerUser serverUser = serverUserDto.toEntity();
-        server.getServerUsers().add(serverUser);
+        server.getServerUsers().add(serverUserDto.toEntity());
 
         return serverUserDto;
     }

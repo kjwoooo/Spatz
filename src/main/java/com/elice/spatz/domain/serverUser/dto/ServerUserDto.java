@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public class ServerUserDto {
     private Servers serverId;
 
     private Users user;
+
 
     public ServerUser toEntity(){
         return ServerUser.builder()
