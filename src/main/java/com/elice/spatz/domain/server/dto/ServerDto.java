@@ -1,6 +1,7 @@
 package com.elice.spatz.domain.server.dto;
 
 import com.elice.spatz.domain.server.entity.Servers;
+import com.elice.spatz.domain.serverUser.dto.ServerUserDto;
 import com.elice.spatz.domain.serverUser.entity.ServerUser;
 import lombok.*;
 
