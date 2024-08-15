@@ -5,6 +5,8 @@ import com.elice.spatz.domain.server.dto.ServerGetDto;
 import com.elice.spatz.domain.server.dto.ServerDto;
 import com.elice.spatz.domain.server.service.ServerService;
 import java.util.UUID;
+
+import com.elice.spatz.domain.serverUser.dto.ServerUserDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +28,9 @@ public class ServerController {
     }
 
     @GetMapping("/servers")
-    public ResponseEntity<List<ServerDto>> getServers()
+    public ResponseEntity<List<ServerDto>> getServers(@AuthenticationPrincipal CustomUserDetails customUserDetails)
     {
-        return ResponseEntity.ok(serverService.getServers());
+        return ResponseEntity.ok(serverService.getServers(customUserDetails));
     }
 
     @PostMapping("/server")
@@ -53,6 +55,13 @@ public class ServerController {
 
         serverService.deleteServer(id);
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/server/invite")
+    public ResponseEntity<ServerUserDto> inviteUser(@RequestParam("code") String code,@AuthenticationPrincipal CustomUserDetails customUserDetails)
+    {
+        ServerUserDto serverUserDto = serverService.inviteUser(code, customUserDetails);
+        return ResponseEntity.status(HttpStatus.OK).body(serverUserDto);
     }
 
 
