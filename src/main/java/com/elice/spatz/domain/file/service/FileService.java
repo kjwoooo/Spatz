@@ -17,9 +17,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.amazonaws.util.IOUtils;
+import com.elice.spatz.domain.chat.entity.ChatChannel;
+import com.elice.spatz.domain.chat.repository.ChatChannelRepository;
 import com.elice.spatz.domain.file.dto.FileRequestDto;
 import com.elice.spatz.domain.file.entity.File;
 import com.elice.spatz.domain.file.repository.FileRepository;
+import com.elice.spatz.domain.user.entity.Users;
+import com.elice.spatz.domain.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +43,8 @@ public class FileService {
 
     private final AmazonS3 s3Client;
     private final FileRepository fileRepository;
+    private final ChatChannelRepository chatChannelRepository;
+    private final UserRepository userRepository;
 
     @Value("${file.upload.max-size}")
 
@@ -47,12 +53,33 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    public List<File> listFilesByChannelId(Long channelId) {
+        ChatChannel channel = chatChannelRepository.findById(channelId)
+                .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다."));
+
+        return fileRepository.findByChannel(channel);
+    }
+
+    public List<File> listFilesByUserId(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다."));
+
+        return fileRepository.findByUser(user);
+    }
+
     public String uploadFile(MultipartFile file, FileRequestDto fileRequestDto) {
         String key = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        ChatChannel channel = chatChannelRepository.findById(fileRequestDto.getChannelId())
+                .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다."));
+        Users user = userRepository.findById(fileRequestDto.getUserId())
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+
         try {
 
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize()); // 파일의 크기를 설정합니다.
             PutObjectRequest request = new PutObjectRequest(bucketName, key, file.getInputStream(), metadata);
             request.withCannedAcl(CannedAccessControlList.AuthenticatedRead); // 접근권한 체크
             PutObjectResult result = s3Client.putObject(request);
@@ -62,6 +89,8 @@ public class FileService {
             fileEntity.setMessageId(fileRequestDto.getMessageId());
             fileEntity.setFileName(file.getOriginalFilename());
             fileEntity.setFileKey(key);
+            fileEntity.setUser(user);
+            fileEntity.setChannel(channel);  // ChatChannel 엔티티를 설정
             fileEntity.setStorageUrl(s3Client.getUrl(bucketName, key).toString());
             fileRepository.save(fileEntity);
 

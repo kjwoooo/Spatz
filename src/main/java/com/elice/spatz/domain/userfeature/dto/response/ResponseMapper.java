@@ -1,5 +1,7 @@
 package com.elice.spatz.domain.userfeature.dto.response;
 
+import com.elice.spatz.domain.user.entity.Users;
+import com.elice.spatz.domain.user.entity.UsersProfileImage;
 import com.elice.spatz.domain.userfeature.entity.Block;
 import com.elice.spatz.domain.userfeature.entity.FriendRequest;
 import com.elice.spatz.domain.userfeature.entity.Friendship;
@@ -47,4 +49,12 @@ public interface ResponseMapper {
     @Mapping(source = "reportImage", target = "reportImage")
     @Mapping(source = "createdAt", target = "createdAt")
     ReportDto reportToReportDto(Report entity);
+
+    // 사용자
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "nickname", target = "nickname")
+    @Mapping(source = "role", target = "role")
+    @Mapping(source = "usersProfileImage.imageUrl", target = "imageUrl")
+    UserDto usersToUserDto(Users user);
 }
