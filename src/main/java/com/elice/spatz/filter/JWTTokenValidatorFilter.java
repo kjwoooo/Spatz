@@ -56,7 +56,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        // access token 추출
         String accessToken = parseBearerToken(request, ApplicationConstants.JWT_HEADER);
 
         // 액세스 토큰이 없다면 예외 발생
@@ -149,7 +148,9 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 || path.equals("/users/nickname")
                 || path.equals("/mails")
                 || path.equals("/afterSocialLogin")
-                || path.startsWith("/h2-console");
+                || path.startsWith("/h2-console")
+                || path.startsWith("/ws");
+
 
     }
 
