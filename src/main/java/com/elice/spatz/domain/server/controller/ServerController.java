@@ -1,11 +1,14 @@
 package com.elice.spatz.domain.server.controller;
 
+import com.elice.spatz.config.CustomUserDetails;
 import com.elice.spatz.domain.server.dto.ServerGetDto;
 import com.elice.spatz.domain.server.dto.ServerDto;
 import com.elice.spatz.domain.server.service.ServerService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,9 +32,10 @@ public class ServerController {
     }
 
     @PostMapping("/server")
-    public ResponseEntity<ServerDto> createServer(@RequestBody ServerDto serverDto)
+    public ResponseEntity<ServerDto> createServer(@RequestBody ServerDto serverDto, @AuthenticationPrincipal CustomUserDetails customUserDetails)
     {
-        serverService.createServer(serverDto);
+        Long UserId = customUserDetails.getId();
+        serverService.createServer(serverDto, UserId);
         return ResponseEntity.ok(serverDto);
     }
 
@@ -50,4 +54,6 @@ public class ServerController {
         serverService.deleteServer(id);
         return ResponseEntity.ok(null);
     }
+
+
 }

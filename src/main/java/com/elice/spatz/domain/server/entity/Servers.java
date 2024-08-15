@@ -1,7 +1,9 @@
 package com.elice.spatz.domain.server.entity;
 
+import com.elice.spatz.domain.serverUser.entity.ServerUser;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
 import jakarta.persistence.*;
+import java.util.List;
 import lombok.*;
 
 @Entity
@@ -18,5 +20,10 @@ public class Servers extends BaseEntity {
 
     @Column(name = "name")
     private String name;
+
+    private String inviteCode;
+
+    @OneToMany(mappedBy = "server")
+    private List<ServerUser> serverUsers;
 
 }

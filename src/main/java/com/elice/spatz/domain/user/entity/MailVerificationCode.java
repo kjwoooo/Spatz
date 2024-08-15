@@ -17,12 +17,18 @@ public class MailVerificationCode {
     private String email;
     private String code;
 
+    private boolean verified;
+
     public MailVerificationCode(String email, String code) {
         this.email = email;
         this.code = code;
+        this.verified = false;
     }
 
     public void changeCode(String code) {
         this.code = code;
+    }
+    public void verify () {
+        this.verified = true;
     }
 }
