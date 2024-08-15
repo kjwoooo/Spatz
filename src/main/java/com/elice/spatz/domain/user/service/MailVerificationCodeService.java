@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class MailVerificationCodeService {
 
     private final MailVerificationCodeRepository mailVerificationCodeRepository;
 
-    @Transactional
     public void verificationCodeSave(String email, String code) {
         // 이미 특정 이메일에 해당하는 확인 코드가 존재한다면 덮어씌우기
         // 그렇지 않다면 새로 저장
@@ -30,9 +30,12 @@ public class MailVerificationCodeService {
         MailVerificationCode mailVerificationCode = mailVerificationCodeRepository.findByEmail(email)
                 .orElseThrow(() -> new UserException(UserErrorCode.INVALID_VERIFICATION_CODE));
 
+        // 만약 잘못된 코드를 입력한다면
         if(!mailVerificationCode.getCode().equals(code)) {
             throw new UserException(UserErrorCode.INVALID_VERIFICATION_CODE);
         }
+
+        mailVerificationCode.verify();
 
     }
 }

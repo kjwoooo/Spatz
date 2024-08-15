@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.user.entity;
 
+import com.elice.spatz.domain.serverUser.entity.ServerUser;
 import com.elice.spatz.domain.userfeature.entity.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -66,6 +67,10 @@ public class Users {
     // 정지
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private BannedUser bannedUser;
+
+    //서버유저관리
+    @OneToMany(mappedBy = "user")
+    private List<ServerUser> serverUsers;
 
     public void changePassword(String password) {
         this.password = password;

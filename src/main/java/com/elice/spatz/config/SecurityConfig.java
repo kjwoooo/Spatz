@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -49,28 +50,18 @@ public class SecurityConfig {
 
     // 인증(로그인)한 사용자만 접근이 가능한 리소스
     String[] urlsToBeAuthenticated = {"/logout", "/users/password/**",
-                                      "/users/**", "/blocks/**", "/reports/**",
-                                      "/friend-requests/**", "/friendships/**", "/servers/**", "/server/**",
-                                        "/openvidu/**", "/voiceChats"
+            "/users/**", "/blocks/**", "/reports/**",
+            "/friend-requests/**", "/friendships/**", "/servers/**",
+            "/openvidu/**", "/voiceChats"
     };
 
     // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
-    String[] urlsToBePermittedAll = {
-            // 회원가입
-            "/users",
-            // 회원가입 과정에서 필요한 api
-            "/users/password/**", "/users/email/**",  "/users/nickname/**",
-            // 비밀번호 변경용
-            "/mails/**",
-            "/apiLogin/**",
-            "/h2-console/**",
-            "/afterSocialLogin/**"};
+    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/h2-console/**", "/users/profile", "/afterSocialLogin/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                // 개발 단계에서는 오로지 HTTP 만을 이용해서 통신하도록 설정
-                .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
+        http.
+                requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 // CSRF 비활성화
                 .csrf(AbstractHttpConfigurer::disable)
                 // JWT 토큰 시스템을 사용하기 위해 jsessionid 발급을 중단.
@@ -82,7 +73,7 @@ public class SecurityConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                        config.setAllowedOrigins(Arrays.asList("http://elice-build.s3-website.ap-northeast-2.amazonaws.com/", "http://localhost:5173"));
                         config.setAllowedMethods(Collections.singletonList("*"));
                         config.setAllowCredentials(true);
                         config.setAllowedHeaders(Collections.singletonList("*"));
@@ -117,7 +108,7 @@ public class SecurityConfig {
                 .exceptionHandling(ehc -> ehc
                         .accessDeniedHandler(new CustomAccessDeniedHandler()))
                 .logout(withDefaults());
-                // OAuth2 로그인 시 구글 로그인 페이지로 리다이렉션
+        // OAuth2 로그인 시 구글 로그인 페이지로 리다이렉션
 
         return http.build();
     }
