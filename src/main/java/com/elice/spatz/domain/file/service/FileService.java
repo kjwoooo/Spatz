@@ -243,4 +243,9 @@ public class FileService {
 
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
+
+    public List<File> listFilesByMessageId(String messageId) {
+
+        return fileRepository.findByMessageId(messageId);
+    }
 }

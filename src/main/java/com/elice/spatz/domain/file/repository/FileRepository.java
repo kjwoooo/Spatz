@@ -18,4 +18,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
     List<File> findByChannel(ChatChannel channel);
 
     List<File> findByUser(Users user);
+
+    List<File> findByMessageId(String messageId);
 }
