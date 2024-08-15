@@ -106,6 +106,14 @@ public class ServerService {
                 new ServerException(ServerErrorCode.SERVER_NOT_FOUND));
         ServerUserDto serverUserDto = new ServerUserDto(server,user);
         server.getServerUsers().add(serverUserDto.toEntity());
+        serverRepository.save(server);
+        System.out.println("=======================");
+        System.out.println("=======================");
+        System.out.println("=======================");
+        System.out.println(server.getServerUsers());
+        System.out.println("=======================");
+        System.out.println("=======================");
+        System.out.println("=======================");
 
         return serverUserDto;
     }
