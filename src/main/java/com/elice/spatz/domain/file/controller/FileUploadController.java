@@ -40,6 +40,13 @@ public class FileUploadController {
         return ResponseEntity.ok(fileList);
     }
 
+    @GetMapping("/message/{messageId}")
+    public ResponseEntity<List<File>> ListFilesByMessageId(@PathVariable String messageId) {
+        // 채널 ID에 해당하는 파일 목록 가져오기
+        List<File> fileList = fileService.listFilesByMessageId(messageId);
+        return ResponseEntity.ok(fileList);
+    }
+
     @GetMapping("/users/{userId}")
     public ResponseEntity<List<File>> ListFilesByUserId(@PathVariable Long userId) {
         // 유저 ID에 해당하는 파일 목록 가져오기

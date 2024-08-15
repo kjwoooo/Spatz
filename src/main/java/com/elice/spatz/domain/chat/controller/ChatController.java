@@ -56,6 +56,8 @@ public class ChatController {
     @MessageMapping("chat/sendMessage")
     public void sendMessage(@Payload ChatMessage chatMessage,
                             SimpMessageHeaderAccessor headerAccessor) {
+
+        System.out.println("Received message: " + chatMessage);
         String userId = (String) headerAccessor.getSessionAttributes().get("userId");
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
@@ -63,8 +65,11 @@ public class ChatController {
         chatMessage.setSenderName(username);
 
         ChatMessage savedMessage = chatService.SaveMessage(chatMessage);
+        System.out.println("Saving message with ID: " + savedMessage.getId());
+
         messagingTemplate.convertAndSend("/topic/channel/" + chatMessage.getChannelId(), savedMessage);
-        messagingTemplate.convertAndSendToUser(userId, "/queue/reply", savedMessage.getId());
+        messagingTemplate.convertAndSendToUser(userId, "/queue/reply", "{\"messageId\": \"" + savedMessage.getId() + "\"}");
+        System.out.println("Message ID sent to user: " + savedMessage.getId());
     }
 
     @MessageMapping("chat/joinChannel")

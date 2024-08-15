@@ -5,7 +5,7 @@ import java.util.UUID;
 
 @Data
 public class FileRequestDto {
-    private UUID messageId;
+    private String messageId;
     private Long channelId;
     private Long userId;
 }
