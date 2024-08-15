@@ -113,8 +113,8 @@ public class UserFeatureController {
     @PostMapping("users/{userId}/report")
     public ResponseEntity<String> createReport(@AuthenticationPrincipal CustomUserDetails loginUser,
                                                @PathVariable Long userId,
-                                               @RequestParam("reportReason") String reportReason,
-                                               @RequestParam("file") MultipartFile file) throws IOException{
+                                               @RequestPart("reportReason") String reportReason,
+                                               @RequestPart(value = "file") MultipartFile file) throws IOException{
         ReportCreateDto newReportCreateDto = new ReportCreateDto(loginUser.getId(), userId, reportReason);
         userFeatureService.createReport(newReportCreateDto, file);
         return ResponseEntity.ok("신고 요청이 완료되었습니다.");
