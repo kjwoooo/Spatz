@@ -49,15 +49,15 @@ public class VoiceChannelService {
         return voiceChannelRepository.findById(id).orElse(null);
     }
 
-    public VoiceChannelDto updateChannel(Long id, VoiceChannelDto channelDto) {
-        if (channelDto.getName() == null || channelDto.getName().trim().isEmpty()) {
+    public VoiceChannelDto updateChannel(Long id, String name) {
+        if (name == null || name.trim().isEmpty()) {
             throw new VoiceChannelException(VoiceChannelErrorCode.INVALID_CHANNEL_NAME);
         }
 
         VoiceChannel channel = voiceChannelRepository.findById(id)
             .orElseThrow(() -> new VoiceChannelException(VoiceChannelErrorCode.CHANNEL_NOT_FOUND));
 
-        channel.setName(channelDto.getName());
+        channel.setName(name);
         VoiceChannel updatedChannel = voiceChannelRepository.save(channel);
         return VoiceChannelMapper.toDTO(updatedChannel);
     }
