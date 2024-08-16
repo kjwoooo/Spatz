@@ -56,7 +56,7 @@ public class SecurityConfig {
     };
 
     // 인증 과정에 필요하여 반드시 모두에게 허용이 되어야 하는 리소스
-    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/h2-console/**", "/users/profile", "/afterSocialLogin/**"};
+    String[] urlsToBePermittedAll = {"/users", "/users/password", "/mails/**", "/apiLogin/**", "/users/email", "/users/nickname" ,"/h2-console/**", "/users/profile", "/afterSocialLogin/**"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
