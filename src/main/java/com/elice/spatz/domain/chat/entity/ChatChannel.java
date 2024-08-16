@@ -1,5 +1,6 @@
 package com.elice.spatz.domain.chat.entity;
 
+import com.elice.spatz.domain.file.entity.File;
 import com.elice.spatz.domain.server.entity.Servers;
 import com.elice.spatz.entity.baseEntity.BaseEntity;
 import jakarta.persistence.*;
@@ -25,4 +26,7 @@ public class ChatChannel extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "server_id", nullable = false)
     private Servers server;
+
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.REMOVE)
+    private List<File> files;
 }

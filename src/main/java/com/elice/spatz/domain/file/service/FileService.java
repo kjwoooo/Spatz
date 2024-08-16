@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -53,6 +54,7 @@ public class FileService {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
+    @Transactional
     public List<File> listFilesByChannelId(Long channelId) {
         ChatChannel channel = chatChannelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다."));
@@ -60,6 +62,7 @@ public class FileService {
         return fileRepository.findByChannel(channel);
     }
 
+    @Transactional
     public List<File> listFilesByUserId(Long userId) {
         Users user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("채널을 찾을 수 없습니다."));
@@ -244,6 +247,7 @@ public class FileService {
         return s3Client.generatePresignedUrl(generatePresignedUrlRequest);
     }
 
+    @Transactional
     public List<File> listFilesByMessageId(String messageId) {
 
         return fileRepository.findByMessageId(messageId);

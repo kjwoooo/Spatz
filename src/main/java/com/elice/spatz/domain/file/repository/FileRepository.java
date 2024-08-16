@@ -15,8 +15,10 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     boolean existsByStorageUrl(String storageUrl);
 
+    @Transactional
     List<File> findByChannel(ChatChannel channel);
 
+    @Transactional
     List<File> findByUser(Users user);
 
     List<File> findByMessageId(String messageId);
