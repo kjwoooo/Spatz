@@ -1,5 +1,5 @@
 # SPATZ
-![spatz-logo](/uploads/75c80f561531b5ab9b89070626774286/spatz-logo.png)
+<img width="472" alt="spatz-logo" src="https://github.com/user-attachments/assets/ce756c00-8ca8-4a35-9d2a-d357412f92d7">
 <br>
 
 
