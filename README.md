@@ -16,20 +16,37 @@
 - 특징: 향후 **MSA 구조로의 전환**을 염두에 두고, 현재 프로젝트는 `user`, `chat` **두 도메인을 독립적으로 수직 분리**하여 개발하였습니다.
 <br>
 
+## 🖥️ 서비스 화면
+### 회원가입 로그인
+![회원가입, 로그인](https://github.com/user-attachments/assets/bc38117c-5f50-4335-82b4-c271234cd797)
+
+### 프로필 설정
+![프로필 설정](https://github.com/user-attachments/assets/6e90df9f-cd72-41ec-97ca-2476c75e05a2)
+
+### 채팅
+![채팅](https://github.com/user-attachments/assets/62cb6417-cd49-45bd-851a-d90111d2ebc4)
+
+### 친구요청
+![친구요청](https://github.com/user-attachments/assets/8338c2cc-656a-4b0e-9b33-c3c06f388ad8)
+
+### 친구수락
+![친구수락](https://github.com/user-attachments/assets/b010794f-c18a-46d1-a908-35d6354d1c6e)
+
+
 
 
 ## 배포 주소
 - <http://elice-build.s3-website.ap-northeast-2.amazonaws.com/>
 <br>
 
-## 사용 방법
+## 👉 사용 방법
 1. 클론: <https://kdt-gitlab.elice.io/cloud_track/class_03/web_project3/team06/multi-module-project.git>
 2. 의존성 설치: gradle 실행
 3. 실행: 실행 버튼 클릭
 4. 접속: <http://localhost:8080/>
 <br>
 
-## 파일 구조
+## 📁 파일 구조
 ```bash
 💻 multi-module-project
 ├─ src
